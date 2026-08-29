@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Datasets & artifacts (never commit data or big models)
+model_training/data/**
+!model_training/data/.gitkeep
+model_training/outputs/*
+!model_training/outputs/.gitkeep
+
+# Node / Expo
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+app/.expo/
+
+# OS cruft
+Thumbs.db
+.DS_Store
