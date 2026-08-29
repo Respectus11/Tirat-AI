@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "ጥራት (Tirat)",
+    "slug": "tirat",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "tirat",
+    "backgroundColor": "#F7F6F2",
+    "android": {
+      "package": "com.tirat.app",
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "adaptiveIcon": {
+        "backgroundColor": "#1F7A45",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "ጥራት needs camera access to analyze teff flour samples.",
+          "recordAudioAndroid": false,
+          "barcodeScannerEnabled": false
+        }
+      ],
+      "expo-sqlite",
+      "expo-localization",
+      "expo-status-bar",
+      "expo-image",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#F9F8F5",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#134F2C"
+          }
+        }
+      ]
+    ]
+  }
+}
