@@ -1,0 +1,14 @@
+# Tirat — model training dependencies
+# IMPORTANT: TensorFlow requires Python 3.10-3.12 (NOT 3.13/3.14).
+# Create a dedicated venv, e.g.:  py -3.12 -m venv .venv && .venv\Scripts\activate
+
+tensorflow>=2.16,<2.21      # training + TFLite conversion (MobileNetV3 lives here)
+numpy<2.2                   # pin below 2.2 for TF binary compat
+pillow>=10.0                # image sanity checks / previews
+scikit-learn>=1.4           # stratified splits, confusion matrix, P/R reports
+matplotlib>=3.8             # training curves, confusion matrix plots
+
+# Optional — only needed if you want embedded label METADATA inside the .tflite
+# (convert_tflite.py works without it; guarded by try/except there).
+# Wheels can lag behind new Python versions, so install manually if you want it:
+# tflite-support
