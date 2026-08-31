@@ -7,6 +7,7 @@ venv/
 # Datasets & artifacts (never commit data or big models)
 model_training/data/**
 !model_training/data/.gitkeep
+model_training/data_redchili/**
 model_training/outputs/*
 !model_training/outputs/.gitkeep
 
