@@ -20,7 +20,7 @@ export async function flushQueue(): Promise<{ uploaded: number; note: string }> 
 
   // STUB: pretend success for at most one item so the status flags can be
   // exercised in demos, then stop. No network calls are made anywhere here yet.
-  console.log(
+  if (__DEV__) console.log(
     `[uploader] STUB flush of ${batch.length} queued sample(s) to ${UPLOAD_ENDPOINT} skipped`,
   );
   return { uploaded: 0, note: "Backend not wired up yet" };

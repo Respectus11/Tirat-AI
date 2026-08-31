@@ -71,7 +71,7 @@ export default function RootLayout() {
         // Opportunistic drain of the opt-in contribution queue (stubbed no-op).
         void flushQueue().catch(() => undefined);
       } catch (e) {
-        console.warn("[RootLayout] DB init failed:", e);
+        if (__DEV__) console.warn("[RootLayout] DB init failed:", e);
       } finally {
         setDbReady(true);
       }
