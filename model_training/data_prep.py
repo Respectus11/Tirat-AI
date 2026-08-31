@@ -127,13 +127,12 @@ def make_augmenter(strong: bool = False):
     return augment
 
 
-def _load_and_preprocess(path: tf.Tensor, resize_short_side: bool = False) -> tf.Tensor:
+def _load_and_preprocess(path: tf.Tensor) -> tf.Tensor:
     img_bytes = tf.io.read_file(path)
-    img = tf.image.decode_jpeg(img_bytes, channels=3)     # JPEG source; PNG decodes too
-    if resize_short_side:
-        img = _resize_short_side(img)
-    img = tf.image.resize(img, [IMG_SIZE, IMG_SIZE])      # plain resize; lab frames are near-square
-    return tf.cast(img, tf.float32)                        # stays 0..255 — normalization happens INSIDE the model
+    img = tf.image.decode_jpeg(img_bytes, channels=3)
+    img = _resize_short_side(img)
+    img = _crop_center_224(img)
+    return tf.cast(img, tf.float32)
 
 
 def _resize_short_side(img: tf.Tensor) -> tf.Tensor:
