@@ -104,6 +104,9 @@ export default function ResultScreen() {
   // Guards so tapping Retry never persists the same scan twice.
   const savedRef = useRef(false);
 
+  // Guard against setState on unmounted component when user navigates away during inference.
+  const isCancelled = useRef(false);
+
   // Entrance choreography for the verdict card.
   const entrance = useRef(new Animated.Value(0)).current;
 
@@ -113,10 +116,12 @@ export default function ResultScreen() {
 
   const run = useCallback(
     async (photoUri: string) => {
+      isCancelled.current = false;
       savedRef.current = false;
       entrance.setValue(0);
       setPhase({ kind: "analyzing" });
       const r = await analyzePhoto(photoUri, foodType);
+      if (isCancelled.current) return;
       if (r.status !== "ok") {
         setPhase({ kind: "error", message: r.message, model: r.status === "model_error" });
         return;
@@ -126,6 +131,7 @@ export default function ResultScreen() {
       try {
         if (!savedRef.current) {
           const savedPath = await persistPhoto(photoUri);
+          if (isCancelled.current) return;
           const id = saveResult({
             photoPath: savedPath,
             verdict: (verdict === "adulterated" ? "wood" : verdict) as Verdict,
@@ -138,9 +144,12 @@ export default function ResultScreen() {
         }
       } catch (err) {
         // Persistence failed but the analysis itself is still valid — show it.
-        console.warn("[result] save failed:", err);
+        if (isCancelled.current) return;
+        if (__DEV__) console.warn("[result] save failed:", err);
       }
+      if (isCancelled.current) return;
       fireHaptic(VERDICT_THEME[verdict].haptic);
+      if (isCancelled.current) return;
       setPhase({ kind: "done", verdict, confidence: r.confidence, estPct: r.estPct, foodType });
       Animated.spring(entrance, {
         toValue: 1,
@@ -158,6 +167,7 @@ export default function ResultScreen() {
     } else {
       setPhase({ kind: "error", message: "Missing photo parameter", model: false });
     }
+    return () => { isCancelled.current = true; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
