@@ -1,5 +1,8 @@
 {
-  "classes": ["pure", "adulterated"],
+  "classes": [
+    "pure",
+    "adulterated"
+  ],
   "input": {
     "size": 224,
     "dtype": "float32",
@@ -7,9 +10,15 @@
     "note": "normalization happens inside the model graph"
   },
   "outputs": {
-    "verdict": { "shape": [1, 2], "activation": "softmax" }
+    "verdict": {
+      "shape": [
+        1,
+        2
+      ],
+      "activation": "softmax"
+    }
   },
   "confidence_threshold": 0.7,
   "food_type": "redchili",
-  "dummy": true
+  "dummy": false
 }
