@@ -59,8 +59,8 @@ def build_model() -> tf.keras.Model:
 
 
 def unfreeze_top(model: tf.keras.Model, n_layers: int = 40) -> None:
-    model.get_layer("mobilenetv3small").trainable = True
-    backbone = model.get_layer("mobilenetv3small")
+    model.get_layer("MobileNetV3Small").trainable = True
+    backbone = model.get_layer("MobileNetV3Small")
     for layer in backbone.layers[:-n_layers]:
         layer.trainable = False
     for layer in backbone.layers[-n_layers:]:
@@ -98,6 +98,8 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--epochs-head", type=int, default=25, help="max epochs, phase 1")
     ap.add_argument("--epochs-ft", type=int, default=15, help="max epochs, phase 2")
+    ap.add_argument("--skip-phase1", action="store_true",
+                    help="skip Phase 1; load best_phase1.keras and run only Phase 2")
     args = ap.parse_args()
 
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -112,19 +114,28 @@ def main() -> None:
     es_kwargs = dict(monitor="val_accuracy", mode="max",
                      restore_best_weights=True, verbose=1)
 
-    # ---------------- Phase 1: heads on frozen backbone ----------------
-    model = build_model()
-    cbs1 = [
-        tf.keras.callbacks.EarlyStopping(patience=5, **es_kwargs),
-        tf.keras.callbacks.ModelCheckpoint(
-            ckpt_dir / "best_phase1.keras", monitor="val_accuracy",
-            mode="max", save_best_only=True, verbose=0),
-        tf.keras.callbacks.CSVLogger(OUTPUTS_DIR / "log_phase1.csv"),
-    ]
-    t0 = time.time()
-    h1 = model.fit(train_ds, validation_data=val_ds,
-                   epochs=args.epochs_head, callbacks=cbs1)
-    print(f"[train_redchili] Phase 1 done in {(time.time()-t0)/60:.1f} min")
+    if args.skip_phase1:
+        # Load the best Phase 1 checkpoint and run only Phase 2
+        p1_path = ckpt_dir / "best_phase1.keras"
+        print(f"[train_redchili] --skip-phase1: loading {p1_path}")
+        model = tf.keras.models.load_model(p1_path)
+        h1 = {}
+        h1_time = 0.0
+    else:
+        # ---------------- Phase 1: heads on frozen backbone ----------------
+        model = build_model()
+        cbs1 = [
+            tf.keras.callbacks.EarlyStopping(patience=5, **es_kwargs),
+            tf.keras.callbacks.ModelCheckpoint(
+                ckpt_dir / "best_phase1.keras", monitor="val_accuracy",
+                mode="max", save_best_only=True, verbose=0),
+            tf.keras.callbacks.CSVLogger(OUTPUTS_DIR / "log_phase1.csv"),
+        ]
+        t0 = time.time()
+        h1 = model.fit(train_ds, validation_data=val_ds,
+                       epochs=args.epochs_head, callbacks=cbs1)
+        h1_time = time.time() - t0
+        print(f"[train_redchili] Phase 1 done in {h1_time/60:.1f} min")
 
     # ---------------- Phase 2: fine-tune top of backbone ----------------
     unfreeze_top(model, n_layers=40)
@@ -148,7 +159,10 @@ def main() -> None:
     print(f"[train_redchili] Phase 2 done in {(time.time()-t0)/60:.1f} min")
 
     # ---------------- Artifacts ----------------
-    merged = {k: list(h1.history[k]) + list(h2.history.get(k, [])) for k in h1.history}
+    if isinstance(h1, dict) and not h1:
+        merged = dict(h2.history)
+    else:
+        merged = {k: list(h1.history[k]) + list(h2.history.get(k, [])) for k in h1.history}
     plot_curves(merged, OUTPUTS_DIR / "training_curves.png")
 
     final_path = OUTPUTS_DIR / "redchili_model.keras"
@@ -159,7 +173,7 @@ def main() -> None:
         "classes": class_names,
         "input": {"size": INPUT_SIZE, "dtype": "float32", "range": "0..255 (normalized inside graph)"},
         "best_val_verdict_accuracy": round(float(best_val_acc), 4),
-        "epochs_phase1": len(h1.history["loss"]),
+        "epochs_phase1": len(h1.history["loss"]) if not isinstance(h1, dict) else 0,
         "epochs_phase2": len(h2.history["loss"]),
         "dataset_sizes": stats["sizes"],
     }
