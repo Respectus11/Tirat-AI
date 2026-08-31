@@ -19,8 +19,7 @@ export type FoodType = "teff" | "redchili";
 export const TEFF_CLASS_KEYS = ["pure", "wood", "gypsum"] as const;
 export const REDCHILI_CLASS_KEYS = ["pure", "adulterated"] as const;
 
-export const CLASS_KEYS = TEFF_CLASS_KEYS;
-export type VerdictKey = (typeof TEFF_CLASS_KEYS)[number] | "adulterated";
+export type VerdictKey = (typeof TEFF_CLASS_KEYS)[number] | (typeof REDCHILI_CLASS_KEYS)[number];
 export const PCT_BINS: number[] = labels.pct_bins;
 
 const modelCache: Partial<Record<FoodType, Promise<TfliteModel> | null>> = {};
