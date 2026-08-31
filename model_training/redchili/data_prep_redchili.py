@@ -7,8 +7,9 @@ Parallel implementation to data_prep.py for Teff (does NOT touch teff files).
 Expected layout:
     model_training/data_redchili/raw/<class_folders>/*.jpg (or .png/.jpeg)
 
-Subfolders are auto-detected. Classes with 'pure' or 'control' (case-insensitive)
-are mapped to the 'pure' verdict class (index 0). All other folders map to 'adulterated' (index 1).
+Subfolders are auto-detected. Folders starting with C1_PWH, C2_AWH, or WH00
+are mapped to the 'pure' verdict class (index 0). All other folders map to
+'adulterated' (index 1).
 """
 
 from __future__ import annotations
@@ -46,6 +47,13 @@ class SlightBlur(tf.keras.layers.Layer):
         self.max_strength = max_strength
 
     def call(self, inputs, training=None):
+        if len(inputs.shape) == 3:
+            inputs = tf.expand_dims(inputs, 0)
+            out = self._apply_blur(inputs)
+            return tf.squeeze(out, 0)
+        return self._apply_blur(inputs)
+
+    def _apply_blur(self, inputs):
         identity = tf.constant([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
         smooth = tf.fill([3, 3], 1.0 / 9.0)
         alpha = tf.random.uniform([], 0.0, self.max_strength)
@@ -55,29 +63,52 @@ class SlightBlur(tf.keras.layers.Layer):
         return tf.nn.depthwise_conv2d(inputs, kernel, strides=[1, 1, 1, 1], padding="SAME")
 
 
-def make_augmenter(strong: bool = False):
-    """Augmentation mirroring teff pipeline (rotation, brightness/contrast, blur)."""
-    rot = 0.04 if not strong else 0.08
-    bright = 0.20 if not strong else 0.35
-    contrast = 0.20 if not strong else 0.35
-    blur = SlightBlur(0.5 if not strong else 0.8)
+def _resize_short_side(img: tf.Tensor) -> tf.Tensor:
+    shape = tf.shape(img)
+    h, w = tf.cast(shape[0], tf.float32), tf.cast(shape[1], tf.float32)
+    scale = IMG_SIZE / tf.minimum(h, w)
+    new_h = tf.cast(tf.round(h * scale), tf.int32)
+    new_w = tf.cast(tf.round(w * scale), tf.int32)
+    return tf.image.resize(img, [new_h, new_w])
 
-    def augment(image: tf.Tensor) -> tf.Tensor:
-        image = tf.image.random_flip_left_right(image)
-        image = tf.keras.layers.RandomRotation(rot)(image)
-        image = tf.keras.layers.RandomBrightness(bright)(image)
-        image = tf.image.random_contrast(image, 1 - contrast, 1 + contrast)
-        image = blur(image)
-        return tf.clip_by_value(image, 0.0, 255.0)
 
-    return augment
+def _crop_center_224(img: tf.Tensor) -> tf.Tensor:
+    shape = tf.shape(img)
+    h, w = shape[0], shape[1]
+    top = (h - IMG_SIZE) // 2
+    left = (w - IMG_SIZE) // 2
+    return img[top:top + IMG_SIZE, left:left + IMG_SIZE]
 
 
 def _load_and_preprocess(path: tf.Tensor) -> tf.Tensor:
     img_bytes = tf.io.read_file(path)
     img = tf.image.decode_jpeg(img_bytes, channels=3)
-    img = tf.image.resize(img, [IMG_SIZE, IMG_SIZE])
+    img = _resize_short_side(img)
+    img = _crop_center_224(img)
     return tf.cast(img, tf.float32)
+
+
+class Augmenter:
+    def __init__(self, strong: bool = False):
+        self.rot = 0.04 if not strong else 0.08
+        self.bright = 0.20 if not strong else 0.35
+        self.contrast = 0.20 if not strong else 0.35
+        self.blur = SlightBlur(0.5 if not strong else 0.8)
+        self.flip = tf.keras.layers.RandomFlip("horizontal")
+        self.rot_layer = tf.keras.layers.RandomRotation(self.rot)
+        self.bright_layer = tf.keras.layers.RandomBrightness(self.bright)
+
+    def __call__(self, image: tf.Tensor) -> tf.Tensor:
+        image = self.flip(image)
+        image = self.rot_layer(image)
+        image = self.bright_layer(image)
+        image = tf.image.random_contrast(image, 1 - self.contrast, 1 + self.contrast)
+        image = self.blur(image)
+        return tf.clip_by_value(image, 0.0, 255.0)
+
+
+def make_augmenter(strong: bool = False):
+    return Augmenter(strong)
 
 
 def make_dataset(paths, cls_labels, *, augment=False, shuffle=False,
@@ -86,10 +117,12 @@ def make_dataset(paths, cls_labels, *, augment=False, shuffle=False,
         (np.asarray(paths), np.asarray(cls_labels, dtype=np.int32))
     )
 
+    aug_fn = make_augmenter() if augment else None
+
     def _map(path, cls):
         img = _load_and_preprocess(path)
-        if augment:
-            img = make_augmenter()(img)
+        if aug_fn is not None:
+            img = aug_fn(img)
         return img, cls
 
     ds = ds.map(_map, num_parallel_calls=AUTOTUNE)
@@ -117,8 +150,8 @@ def build_file_lists(data_dir: Path | None = None):
 
     raw_classes = {}
     for folder in subfolders:
-        name = folder.name.lower()
-        if "pure" in name or "control" in name:
+        name = folder.name
+        if name.startswith(("C1_PWH", "C2_AWH", "WH00")):
             target_cls = 0  # pure
         else:
             target_cls = 1  # adulterated
@@ -127,7 +160,9 @@ def build_file_lists(data_dir: Path | None = None):
 
         files = sorted(
             p for p in folder.rglob("*")
-            if p.suffix.lower() in {".jpg", ".jpeg", ".png"} and not p.name.startswith(".")
+            if p.suffix.lower() in {".jpg", ".jpeg", ".png"}
+            and not p.name.startswith(".")
+            and p.stat().st_size > 0
         )
         for p in files:
             paths.append(str(p))
@@ -183,7 +218,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
     try:
-        _, stats, _ = build_file_lists()
+        _, stats = build_file_lists()
         (OUTPUTS_DIR / "dataset_summary.json").write_text(json.dumps(stats, indent=2))
         print(json.dumps(stats, indent=2))
     except SystemExit as e:
