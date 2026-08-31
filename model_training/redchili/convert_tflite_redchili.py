@@ -42,7 +42,7 @@ def write_labels_json(dest: Path) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=str(OUTPUTS_DIR / "redchili_model.keras"))
+    ap.add_argument("--model", default=str(OUTPUTS_DIR / "checkpoints" / "best_phase2.keras"))
     args = ap.parse_args()
 
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
