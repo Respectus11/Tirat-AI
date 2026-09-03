@@ -51,6 +51,13 @@
           }
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "9c4f9c1d-aebe-45fe-bf57-fd96a6631196"
+      }
+    },
+    "owner": "kalexooo"
   }
 }
