@@ -2,7 +2,7 @@
   "expo": {
     "name": "ጥራት (Tirat)",
     "slug": "tirat",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -10,7 +10,7 @@
     "backgroundColor": "#F7F6F2",
     "android": {
       "package": "com.tirat.app",
-      "versionCode": 2,
+      "versionCode": 3,
       "permissions": [
         "android.permission.CAMERA"
       ],
@@ -51,7 +51,8 @@
             "backgroundColor": "#134F2C"
           }
         }
-      ]
+      ],
+      "expo-asset"
     ],
     "extra": {
       "router": {},

@@ -1,0 +1,1 @@
+﻿try { $inputFile = [System.IO.Path]::GetTempFileName(); 'y' | Out-File -FilePath $inputFile -Encoding ASCII -NoNewline; Start-Process -FilePath 'powershell.exe' -ArgumentList '-NoProfile','-Command','npx eas build --profile preview --platform android' -RedirectStandardInput $inputFile -Wait -NoNewWindow } catch { Write-Error  }

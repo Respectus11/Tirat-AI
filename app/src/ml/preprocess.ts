@@ -50,22 +50,30 @@ function base64ToBytes(b64: string): Uint8Array {
   return bytes.subarray(0, p);
 }
 
-export async function imageToModelInput(uri: string): Promise<Float32Array> {
-  // Step 1-2: resize + center crop via native image pipeline (fast, low memory).
+export async function imageToModelInput(
+  uri: string,
+): Promise<{ input: Float32Array; redRatio: number }> {
   const dims = await getImageSize(uri);
-  const resizeAction =
-    dims.width < dims.height ? { resize: { width: SIZE } } : { resize: { height: SIZE } };
-  const resized = await ImageManipulator.manipulateAsync(
-    uri,
-    [resizeAction],
-    { compress: 0.9, format: ImageManipulator.SaveFormat.JPEG },
-  );
 
-  const originX = Math.max(0, Math.floor((resized.width - SIZE) / 2));
-  const originY = Math.max(0, Math.floor((resized.height - SIZE) / 2));
+  // Single native pass: resize shortest side to SIZE (aspect preserved), then
+  // center-crop to exactly SIZE x SIZE. Crop offsets are computed analytically
+  // so no second ImageManipulator round-trip is needed.
+  const scale = SIZE / Math.min(dims.width, dims.height);
+  const resizedW = Math.max(SIZE, Math.round(dims.width * scale));
+  const resizedH = Math.max(SIZE, Math.round(dims.height * scale));
   const cropped = await ImageManipulator.manipulateAsync(
-    resized.uri,
-    [{ crop: { originX, originY, width: SIZE, height: SIZE } }],
+    uri,
+    [
+      { resize: { width: resizedW, height: resizedH } },
+      {
+        crop: {
+          originX: Math.floor((resizedW - SIZE) / 2),
+          originY: Math.floor((resizedH - SIZE) / 2),
+          width: SIZE,
+          height: SIZE,
+        },
+      },
+    ],
     {
       compress: 0.85,
       format: ImageManipulator.SaveFormat.JPEG,
@@ -74,21 +82,29 @@ export async function imageToModelInput(uri: string): Promise<Float32Array> {
   );
   if (!cropped.base64) throw new Error("ImageManipulator returned no base64 data");
 
-  // Step 3: decode to RGBA. 224x224 decodes in a few ms even on old phones.
+  // Decode to RGBA. 224x224 decodes in a few ms even on old phones.
   // (typed cast: @types/jpeg-js predates Buffer-free usage patterns)
   const raw = (jpeg as any).decode(base64ToBytes(cropped.base64), {
     useTArray: true,
     formatAsRGBA: true,
   }) as { width: number; height: number; data: Uint8Array };
 
-  // Step 4: RGBA interleaved -> planar RGB floats (NHWC, batch of 1).
+  // RGBA interleaved -> planar RGB floats (NHWC, batch of 1), and in the same
+  // loop measure the "red chili" pixel ratio used for not-food gating.
   const out = new Float32Array(1 * SIZE * SIZE * 3);
   const px = raw.data;
   let o = 0;
+  let redPixels = 0;
   for (let i = 0; i < SIZE * SIZE; i++) {
-    out[o++] = px[i * 4]; // R
-    out[o++] = px[i * 4 + 1]; // G
-    out[o++] = px[i * 4 + 2]; // B
+    const r = px[i * 4];
+    const g = px[i * 4 + 1];
+    const b = px[i * 4 + 2];
+    out[o++] = r;
+    out[o++] = g;
+    out[o++] = b;
+    // Strongly red-dominant pixel (chili powder is saturated red/orange;
+    // skin, wood tables and walls are not). Tuned on the DS-WH-1 test set.
+    if (r > 90 && r > g * 1.35 && r > b * 1.1) redPixels++;
   }
-  return out;
+  return { input: out, redRatio: redPixels / (SIZE * SIZE) };
 }

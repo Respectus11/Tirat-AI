@@ -1,0 +1,24 @@
+
+--- Trying to install tensorflow-cpu ---
+stdout:
+
+stderr:
+ERROR: Could not find a version that satisfies the requirement tensorflow-cpu (from versions: none)
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+ERROR: No matching distribution found for tensorflow-cpu
+
+Failed to install tensorflow-cpu
+
+--- Trying to install tensorflow ---
+stdout:
+
+stderr:
+ERROR: Could not find a version that satisfies the requirement tensorflow (from versions: none)
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+ERROR: No matching distribution found for tensorflow
+
+Failed to install tensorflow

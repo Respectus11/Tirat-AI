@@ -1,7 +1,12 @@
-# Tirat AI — v0.2.0 Release Notes (production-ready build)
+# Tirat AI — v0.2.1 Release Notes (production-ready build)
 
-**Released:** Sept 2026 · **versionName** 0.2.0 · **versionCode** 2
-**APK:** `app/android/app/build/outputs/apk/release/app-release.apk` (173 MB, signed, JS bundle embedded — runs with **no Metro / no USB needed**)
+**Released:** Sept 2026 · **versionName** 0.2.1 · **versionCode** 3
+**APK:** `app/android/app/build/outputs/apk/release/app-release.apk` (signed, JS bundle embedded — runs with **no Metro / no USB needed**)
+
+> ### v0.2.1 hotfix — "Model not loaded" in release
+> **Root cause:** react-native-fast-tflite's native loader reads the model with plain `java.net.URL(path).readBytes()`, which cannot open Metro-bundled assets (they resolve to AAPT2-obfuscated `res/` entries inside the APK) or `android_asset` URIs. Debug builds only worked because Metro served the file over HTTP — so the bug appeared only in production builds.
+> **Fix (two-layer):** models are now loaded via **expo-asset** (`Asset.fromModule(...).downloadAsync()` extracts the bundled resource to a real cache file — the pattern from fast-tflite's own docs, same mechanism as offline expo-font), with a fallback that copies packaged native assets (`android/app/src/main/assets/models/`, staged from `assets/models/` at configuration time in `android/app/build.gradle`) to the cache and loads a plain `file://` URL. Preload failures are logged to logcat (`[tflite] ...`) instead of being swallowed.
+> **Verified on device (SM-M115F, release, no Metro/USB-host):** both models log `loaded` at startup; a scan of a non-chili object (grain bag) correctly triggers the "not a chili sample" gate; 3× cold-start OK; 0 runtime errors.
 
 ---
 

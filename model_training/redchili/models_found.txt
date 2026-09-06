@@ -1,0 +1,3 @@
+Found models:
+C:\Users\hp\Desktop\Tirat AI\app\assets\models\redchili_model.tflite (0 bytes)
+C:\Users\hp\Desktop\Tirat AI\app\assets\models\tirat_model.tflite (593 bytes)

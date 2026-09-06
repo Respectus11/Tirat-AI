@@ -34,6 +34,7 @@ import { persistPhoto } from "../src/util/fs";
 type Phase =
   | { kind: "analyzing" }
   | { kind: "error"; message: string; model: boolean }
+  | { kind: "not_food" }
   | {
       kind: "done";
       verdict: VerdictKey | "inconclusive";
@@ -122,6 +123,13 @@ export default function ResultScreen() {
       setPhase({ kind: "analyzing" });
       const r = await analyzePhoto(photoUri, foodType);
       if (isCancelled.current) return;
+      if (r.status === "not_food") {
+        // Not a powder sample (hand, table, …) — show guidance, save nothing.
+        fireHaptic(Haptics.NotificationFeedbackType.Warning);
+        if (isCancelled.current) return;
+        setPhase({ kind: "not_food" });
+        return;
+      }
       if (r.status !== "ok") {
         setPhase({ kind: "error", message: r.message, model: r.status === "model_error" });
         return;
@@ -134,10 +142,11 @@ export default function ResultScreen() {
           if (isCancelled.current) return;
           const id = saveResult({
             photoPath: savedPath,
-            verdict: (verdict === "adulterated" ? "wood" : verdict) as Verdict,
-            adulterant: verdict === "adulterated" ? "adulterated" : ADULTERANT_NAME[verdict] ?? null,
+            verdict: verdict as Verdict,
+            adulterant: ADULTERANT_NAME[verdict] ?? null,
             confidence: r.confidence,
             estPct: r.estPct,
+            foodType,
           });
           enqueueForUpload(id); // no-op unless the user opted in (checked inside)
           savedRef.current = true;
@@ -219,6 +228,37 @@ export default function ResultScreen() {
     );
   }
 
+  if (phase.kind === "not_food") {
+    return (
+      <Centered bg={colors.bg}>
+        <View style={styles.errIconCircle}>
+          <Ionicons name="hand-left-outline" size={34} color={colors.amber} />
+        </View>
+        <Text style={[styles.errTitle, isAmharic && styles.fontAmBold]}>
+          {t("not_food_title")}
+        </Text>
+        <Text style={[styles.errBody, isAmharic && styles.fontAm]}>
+          {t("not_food_body")}
+        </Text>
+        <TouchableOpacity
+          style={styles.primaryBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+        >
+          <Ionicons name="camera-reverse-outline" size={18} color="#fff" />
+          <Text style={[styles.primaryBtnText, isAmharic && styles.fontAmBold]}>
+            {t("retake")}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.ghostBtn} onPress={() => router.back()}>
+          <Text style={[styles.ghostBtnText, isAmharic && styles.fontAm]}>
+            {t("new_scan")}
+          </Text>
+        </TouchableOpacity>
+      </Centered>
+    );
+  }
+
   const theme = VERDICT_THEME[phase.verdict];
   const isInconclusive = phase.verdict === "inconclusive";
   const isAdulterated = !isInconclusive && phase.verdict !== "pure";
@@ -266,14 +306,14 @@ export default function ResultScreen() {
           {/* Food type badge */}
           <View style={styles.foodBadge}>
             <Text style={styles.foodBadgeText}>
-              {phase.foodType === "redchili" ? "🌶 Red Chili Powder" : "🌾 Teff Flour"}
+              {phase.foodType === "redchili" ? t("food_badge_redchili") : t("food_badge_teff")}
             </Text>
           </View>
 
           {isAdulterated && (
             <View style={styles.kickerPill}>
               <Text style={styles.kickerText}>
-                {phase.verdict === "adulterated" ? "ADULTERATED" : t("adulterated_generic").toUpperCase()}
+                {t("adulterated_generic").toUpperCase()}
               </Text>
             </View>
           )}
@@ -281,7 +321,7 @@ export default function ResultScreen() {
             <Ionicons name={theme.icon} size={40} color="#fff" />
           </View>
           <Text style={[styles.verdictTitle, isAmharic && styles.fontAmBold]}>
-            {phase.verdict === "adulterated" ? "Adulterated Red Chili" : t(theme.label)}
+            {phase.verdict === "adulterated" ? t("verdict_adulterated") : t(theme.label)}
           </Text>
 
           {isInconclusive && (
@@ -325,11 +365,17 @@ export default function ResultScreen() {
 
       {/* Red Chili dataset disclaimer banner */}
       {phase.foodType === "redchili" && (
-        <View style={styles.redchiliDisclaimerBox}>
+        <View style={styles.datasetDisclaimerBox}>
           <Ionicons name="information-circle" size={18} color="#D97706" style={{ marginTop: 2 }} />
-          <Text style={styles.redchiliDisclaimerText}>
-            Trained on a public reference dataset — not yet validated on Ethiopian market samples.
-          </Text>
+          <Text style={styles.datasetDisclaimerText}>{t("redchili_disclaimer")}</Text>
+        </View>
+      )}
+
+      {/* Teff demo banner — the real teff model has not been trained yet */}
+      {phase.foodType === "teff" && (
+        <View style={styles.datasetDisclaimerBox}>
+          <Ionicons name="flask-outline" size={18} color="#D97706" style={{ marginTop: 2 }} />
+          <Text style={styles.datasetDisclaimerText}>{t("teff_demo_badge")}</Text>
         </View>
       )}
 
@@ -746,7 +792,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: typography.fontFamily.latinBold,
   },
-  redchiliDisclaimerBox: {
+  datasetDisclaimerBox: {
     flexDirection: "row",
     alignItems: "flex-start",
     backgroundColor: "#FEF3C7",
@@ -757,7 +803,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.md,
     gap: spacing.xs + 2,
   },
-  redchiliDisclaimerText: {
+  datasetDisclaimerText: {
     flex: 1,
     color: "#92400E",
     fontSize: typography.fontSize.xs,

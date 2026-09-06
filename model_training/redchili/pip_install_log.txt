@@ -1,0 +1,45 @@
+
+--- Trying to install tflite-runtime ---
+stdout:
+
+stderr:
+ERROR: Could not find a version that satisfies the requirement tflite-runtime (from versions: none)
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+ERROR: No matching distribution found for tflite-runtime
+
+Failed to install tflite-runtime
+
+--- Trying to install ai-edge-litert ---
+stdout:
+Collecting ai-edge-litert
+  Downloading ai_edge_litert-2.2.0-cp314-cp314-win_amd64.whl.metadata (2.4 kB)
+Collecting backports.strenum (from ai-edge-litert)
+  Downloading backports_strenum-1.2.8-py3-none-any.whl.metadata (3.6 kB)
+Collecting flatbuffers (from ai-edge-litert)
+  Downloading flatbuffers-25.12.19-py2.py3-none-any.whl.metadata (1.0 kB)
+Requirement already satisfied: numpy>=1.23.2 in c:\users\hp\appdata\local\programs\python\python314\lib\site-packages (from ai-edge-litert) (2.4.4)
+Requirement already satisfied: tqdm in c:\users\hp\appdata\local\programs\python\python314\lib\site-packages (from ai-edge-litert) (4.67.3)
+Requirement already satisfied: typing-extensions in c:\users\hp\appdata\local\programs\python\python314\lib\site-packages (from ai-edge-litert) (4.15.0)
+Collecting protobuf (from ai-edge-litert)
+  Downloading protobuf-7.36.0-cp310-abi3-win_amd64.whl.metadata (595 bytes)
+Collecting ml_dtypes (from ai-edge-litert)
+  Downloading ml_dtypes-0.6.0-cp314-cp314-win_amd64.whl.metadata (8.8 kB)
+Requirement already satisfied: colorama in c:\users\hp\appdata\local\programs\python\python314\lib\site-packages (from tqdm->ai-edge-litert) (0.4.6)
+Downloading ai_edge_litert-2.2.0-cp314-cp314-win_amd64.whl (18.5 MB)
+   ---------------------------------------- 18.5/18.5 MB 43.2 kB/s  0:04:16
+Downloading backports_strenum-1.2.8-py3-none-any.whl (7.9 kB)
+Downloading flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Downloading ml_dtypes-0.6.0-cp314-cp314-win_amd64.whl (457 kB)
+Downloading protobuf-7.36.0-cp310-abi3-win_amd64.whl (453 kB)
+Installing collected packages: flatbuffers, protobuf, ml_dtypes, backports.strenum, ai-edge-litert
+
+Successfully installed ai-edge-litert-2.2.0 backports.strenum-1.2.8 flatbuffers-25.12.19 ml_dtypes-0.6.0 protobuf-7.36.0
+
+stderr:
+
+[notice] A new release of pip is available: 25.3 -> 26.2.1
+[notice] To update, run: python.exe -m pip install --upgrade pip
+
+Successfully installed ai-edge-litert!

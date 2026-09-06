@@ -1,0 +1,32 @@
+{
+  "total": 5227,
+  "raw_folder_counts": {
+    "C1_PWH": 246,
+    "C2_AWH": 1043,
+    "WH00": 246,
+    "WHBM_10": 246,
+    "WHBM_15": 248,
+    "WHBM_5": 246,
+    "WHGM_10": 246,
+    "WHGM_15": 246,
+    "WHGM_5": 246,
+    "WHRB_10": 246,
+    "WHRB_15": 246,
+    "WHRB_5": 246,
+    "WHWB_10": 246,
+    "WHWB_15": 246,
+    "WHWB_5": 246,
+    "WHWS_10": 246,
+    "WHWS_15": 246,
+    "WHWS_5": 246
+  },
+  "per_class": {
+    "pure": 492,
+    "adulterated": 4735
+  },
+  "sizes": {
+    "train": 4181,
+    "val": 523,
+    "test": 523
+  }
+}

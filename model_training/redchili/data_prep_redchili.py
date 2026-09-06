@@ -7,9 +7,17 @@ Parallel implementation to data_prep.py for Teff (does NOT touch teff files).
 Expected layout:
     model_training/data_redchili/raw/<class_folders>/*.jpg (or .png/.jpeg)
 
-Subfolders are auto-detected. Folders starting with C1_PWH, C2_AWH, or WH00
-are mapped to the 'pure' verdict class (index 0). All other folders map to
-'adulterated' (index 1).
+Subfolders are auto-detected.
+
+Dataset: "Red Chilli Adulteration Digital Image Dataset (DS-WH-1)".
+  - DS I:  C1_PWH  = Category 1, Pure WH-chili      -> pure
+           C2_AWH  = Category 2, Adulterated WH     -> adulterated
+  - DS II: WH00    = 0% adulteration                -> pure
+           WHBM/WHGM/WHRB/WHWS _{5,10,15}           -> adulterated
+
+Verified visually + via dataset_structure.txt: C2_AWH is the ADULTERATED class
+(brighter, different texture than C1_PWH). Mapping it to 'pure' poisons ~20% of
+the labels (the bug that produced the coin-flip 49.7% model).
 """
 
 from __future__ import annotations
@@ -34,6 +42,7 @@ TRAIN_FRAC = 0.80
 VAL_FRAC = 0.10
 
 CLASS_NAMES = ["pure", "adulterated"]
+PURE_FOLDERS = ("C1_PWH", "WH00")  # only these are pure; everything else is adulterated
 AUTOTUNE = tf.data.AUTOTUNE
 
 
@@ -151,10 +160,10 @@ def build_file_lists(data_dir: Path | None = None):
     raw_classes = {}
     for folder in subfolders:
         name = folder.name
-        if name.startswith(("C1_PWH", "C2_AWH", "WH00")):
-            target_cls = 0  # pure
-        else:
-            target_cls = 1  # adulterated
+        # C1_PWH = pure (DS I), WH00 = 0% level (DS II). C2_AWH is the
+        # ADULTERATED class of DS I — mapping it to 'pure' was the label
+        # poisoning bug (see dataset_structure.txt + module docstring).
+        target_cls = 0 if name.startswith(PURE_FOLDERS) else 1
 
         raw_classes[folder.name] = CLASS_NAMES[target_cls]
 

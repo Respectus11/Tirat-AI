@@ -27,7 +27,7 @@ export default function ScanScreen() {
   const isAmharic = lang === "am";
   const cameraRef = useRef<React.ComponentRef<typeof CameraView>>(null);
   const [permission, requestPermission] = useCameraPermissions();
-  const [flashOn, setFlashOn] = useState(true);
+  const [flashOn, setFlashOn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [focused, setFocused] = useState(true);
   const [foodType, setFoodType] = useState<"teff" | "redchili">("teff");
@@ -113,13 +113,14 @@ export default function ScanScreen() {
   return (
     <View style={styles.fillBlack}>
       {focused ? (
-        <CameraView
+        <>
+          {/* CameraView does not support children — overlays are siblings above it */}
+          <CameraView
           ref={cameraRef}
           style={StyleSheet.absoluteFill}
           facing="back"
-          flash={flashOn ? "on" : "off"}
           enableTorch={flashOn}
-        >
+          />
           {/* Top Bar with brand mark & food selector toggle */}
           <View style={[styles.topBar, { paddingTop: insets.top + spacing.sm }]}>
             <View style={styles.brandPill}>
@@ -219,7 +220,7 @@ export default function ScanScreen() {
               <View style={styles.controlBtnSpacer} />
             </View>
           </View>
-        </CameraView>
+        </>
       ) : (
         <View style={[StyleSheet.absoluteFill, styles.fillBlack]}>
           {busy && <ActivityIndicator color={colors.primary} />}
@@ -276,6 +277,10 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.latinBold,
   },
   topBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
     alignItems: "center",
     paddingHorizontal: spacing.lg,
   },
@@ -299,7 +304,11 @@ const styles = StyleSheet.create({
     fontFamily: typography.fontFamily.latinMedium,
   },
   guideWrap: {
-    flex: 1,
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -351,6 +360,10 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: radius.md,
   },
   bottomBar: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     paddingHorizontal: spacing.lg,
   },
   chipRow: {

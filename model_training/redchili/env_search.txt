@@ -1,0 +1,4 @@
+conda path: None
+wsl path: C:\Windows\system32\wsl.EXE
+wsl python3: 
+wsl python3 version: 

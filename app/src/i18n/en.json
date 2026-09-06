@@ -46,5 +46,12 @@
   "error_title": "Something went wrong",
   "retry": "Retry",
   "about": "About",
-  "recent_scans": "Recent scans"
+  "recent_scans": "Recent scans",
+  "food_badge_teff": "🌾 Teff Flour",
+  "food_badge_redchili": "🌶 Red Chili Powder",
+  "verdict_adulterated": "Adulterated red chili",
+  "not_food_title": "Not a chili powder sample",
+  "not_food_body": "We couldn't see red chili powder in this photo. Fill the frame with the powder and retake.",
+  "redchili_disclaimer": "Trained on a public reference dataset — not yet validated on Ethiopian market samples.",
+  "teff_demo_badge": "Teff mode is a demo — the real teff model is still in training. Red chili mode is fully active."
 }

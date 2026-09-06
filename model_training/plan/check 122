@@ -1,0 +1,44 @@
+Fix two confirmed issues from the earlier audit before I install the app on
+a physical phone for testing. Do these one at a time, show me the change for
+each, and confirm before moving to the next.
+
+## Fix 1 — Race condition on navigate-away during inference (H1)
+
+In result.tsx, the run() function is async and fires inside a useEffect. If
+the user navigates away (back button, switching food type, etc.) before
+analyzePhoto/persistPhoto/saveResult finish, the component may already be
+unmounted, causing state updates on an unmounted component.
+
+Fix:
+1. Add a ref: const isCancelled = useRef(false)
+2. In the useEffect's cleanup function, set isCancelled.current = true
+3. After EVERY await inside run() (after analyzePhoto, after persistPhoto,
+   after saveResult, and any other async step in that function), check
+   `if (isCancelled.current) return;` before calling any setState/setPhase.
+4. Show me the full updated run() function so I can review every await is
+   covered, not just the first one.
+
+## Fix 2 — Remove/gate production console logs (M1)
+
+Three specific locations need to stop leaking data in production builds:
+- uploader.ts:23 — logs the upload endpoint URL and queue length
+- _layout.tsx:74 — logs DB init failure details (could include file paths)
+- result.tsx:140 — logs save-failure details (could include photo paths)
+
+Fix: wrap each of these three console.log/console.warn calls in
+`if (__DEV__) { ... }` so they still help during development but are
+stripped from production/release builds. Do not just delete them outright —
+they're useful during testing, just gate them.
+
+Show me the three updated lines/blocks so I can confirm each is correctly
+gated and none were missed elsewhere in the same files (do a quick search
+for any other raw console.log/console.warn in these three files while
+you're in there, and flag anything else you find before deciding whether to
+also gate it).
+
+## After both fixes
+
+Run a quick build/type-check (whatever the project's normal check command
+is — tsc, expo lint, etc.) to confirm nothing broke, and tell me the app is
+ready for me to run `npx expo start` and install on a physical device via
+Expo Go or a dev build.

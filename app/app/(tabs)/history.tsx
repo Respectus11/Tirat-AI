@@ -35,6 +35,12 @@ const VERDICT_META: Record<Verdict, VerdictMeta> = {
     softBg: colors.greenSoft,
     icon: "shield-checkmark",
   },
+  adulterated: {
+    label: "adulterated_generic",
+    color: "#991B1B",
+    softBg: colors.redSoft,
+    icon: "warning",
+  },
   wood: { label: "verdict_wood", color: "#991B1B", softBg: colors.redSoft, icon: "warning" },
   gypsum: { label: "verdict_gypsum", color: "#991B1B", softBg: colors.redSoft, icon: "warning" },
   inconclusive: {
@@ -60,7 +66,9 @@ export default function HistoryScreen() {
   const stats = useMemo(() => {
     const total = rows.length;
     const pure = rows.filter((r) => r.verdict === "pure").length;
-    const flagged = rows.filter((r) => r.verdict === "wood" || r.verdict === "gypsum").length;
+    const flagged = rows.filter(
+      (r) => r.verdict === "wood" || r.verdict === "gypsum" || r.verdict === "adulterated",
+    ).length;
     return { total, purePct: total ? Math.round((pure / total) * 100) : null, flagged };
   }, [rows]);
 
@@ -161,6 +169,8 @@ export default function HistoryScreen() {
                   </Text>
                 </View>
                 <Text style={[styles.sub, isAmharic && styles.fontAm]} numberOfLines={1}>
+                  {item.food_type === "redchili" ? "🌶" : "🌾"}
+                  {" · "}
                   {formatWhen(item.created_at)}
                   {" · "}
                   {t("confidence").toLowerCase()} {Math.round(item.confidence * 100)}%

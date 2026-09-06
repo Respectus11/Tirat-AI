@@ -111,6 +111,18 @@ def main() -> None:
     train_ds, val_ds, test_ds = datasets["train"], datasets["val"], datasets["test"]
     print(f"[train_redchili] {json.dumps(stats['sizes'])} — classes={class_names}")
 
+    # Class weights: the corrected label mapping is imbalanced
+    # (pure = C1_PWH+WH00 ~ 492 vs adulterated ~ 4735). Without weights the
+    # model drifts to the majority class; for a screening tool a missed
+    # adulterant (false 'pure') is the costlier error.
+    per_class = stats["per_class"]
+    n_cls = len(class_names)
+    n_total = sum(per_class.values())
+    class_weight = {i: n_total / (n_cls * per_class[class_names[i]]) for i in range(n_cls)}
+    pretty = {class_names[k]: round(v, 3) for k, v in class_weight.items()}
+    print(f"[train_redchili] per_class={per_class}")
+    print(f"[train_redchili] class_weight={pretty}")
+
     es_kwargs = dict(monitor="val_accuracy", mode="max",
                      restore_best_weights=True, verbose=1)
 
@@ -133,7 +145,8 @@ def main() -> None:
         ]
         t0 = time.time()
         h1 = model.fit(train_ds, validation_data=val_ds,
-                       epochs=args.epochs_head, callbacks=cbs1)
+                       epochs=args.epochs_head, callbacks=cbs1,
+                       class_weight=class_weight)
         h1_time = time.time() - t0
         print(f"[train_redchili] Phase 1 done in {h1_time/60:.1f} min")
 
@@ -155,7 +168,8 @@ def main() -> None:
     ]
     t0 = time.time()
     h2 = model.fit(train_ds, validation_data=val_ds,
-                   epochs=args.epochs_ft, callbacks=cbs2)
+                   epochs=args.epochs_ft, callbacks=cbs2,
+                   class_weight=class_weight)
     print(f"[train_redchili] Phase 2 done in {(time.time()-t0)/60:.1f} min")
 
     # ---------------- Artifacts ----------------
