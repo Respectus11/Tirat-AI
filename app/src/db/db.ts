@@ -11,7 +11,8 @@ import { deleteFile } from "../util/fs";
 
 export const db = SQLite.openDatabaseSync("tirat.db");
 
-export type Verdict = "pure" | "wood" | "gypsum" | "inconclusive";
+export type Verdict = "pure" | "adulterated" | "wood" | "gypsum" | "inconclusive";
+export type FoodType = "teff" | "redchili";
 
 export interface HistoryRow {
   id: number;
@@ -21,6 +22,7 @@ export interface HistoryRow {
   adulterant: string | null;
   confidence: number;
   est_pct: number | null;
+  food_type: FoodType;
   queued: 0 | 1;
 }
 
@@ -49,6 +51,15 @@ export function initDb(): void {
       value TEXT NOT NULL
     );
   `);
+
+  // Migration: food_type was added when red-chili support shipped. Old
+  // installs keep every row — new column defaults to 'teff'.
+  const cols = db.getAllSync<{ name: string }>(`PRAGMA table_info(results)`);
+  if (!cols.some((c) => c.name === "food_type")) {
+    db.runSync(
+      `ALTER TABLE results ADD COLUMN food_type TEXT NOT NULL DEFAULT 'teff'`,
+    );
+  }
 }
 
 // ---------------- results ----------------
@@ -59,11 +70,20 @@ export function saveResult(r: {
   adulterant: string | null;
   confidence: number;
   estPct: number | null;
+  foodType: FoodType;
 }): number {
   const res = db.runSync(
-    `INSERT INTO results (created_at, photo_path, verdict, adulterant, confidence, est_pct)
-     VALUES (?, ?, ?, ?, ?, ?)`,
-    [new Date().toISOString(), r.photoPath, r.verdict, r.adulterant, r.confidence, r.estPct],
+    `INSERT INTO results (created_at, photo_path, verdict, adulterant, confidence, est_pct, food_type)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [
+      new Date().toISOString(),
+      r.photoPath,
+      r.verdict,
+      r.adulterant,
+      r.confidence,
+      r.estPct,
+      r.foodType,
+    ],
   );
   pruneHistory();
   return Number(res.lastInsertRowId);
