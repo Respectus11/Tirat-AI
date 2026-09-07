@@ -30,7 +30,7 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "ጥራት needs camera access to analyze teff flour samples.",
+          "cameraPermission": "ጥራት needs camera access to analyze food samples for adulteration.",
           "recordAudioAndroid": false,
           "barcodeScannerEnabled": false
         }
