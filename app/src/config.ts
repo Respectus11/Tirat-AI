@@ -21,5 +21,19 @@ export const MODEL_INPUT_SIZE = 224;
  */
 export const RED_RATIO_MIN = 0.12;
 
+/**
+ * Fraction of warm brown/tan pixels that must be present for a photo to be
+ * analyzed in teff mode. Teff flour is warm golden-brown; blue clothes,
+ * green plants and white walls will fall well below this threshold.
+ */
+export const TEFF_BROWN_RATIO_MIN = 0.15;
+
+/**
+ * Minimum pixel-level RGB variance across the image. Real food powder has
+ * visible grain texture. Solid-color surfaces (walls, screens, paper,
+ * dark pockets) have near-zero variance and are rejected as not-food.
+ */
+export const TEXTURE_VARIANCE_MIN = 150;
+
 /** Max history rows kept locally; photos of older rows are pruned with them. */
 export const HISTORY_LIMIT = 500;
