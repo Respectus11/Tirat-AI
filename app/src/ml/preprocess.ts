@@ -11,15 +11,13 @@
 // preprocessing math that could drift from training — the single biggest source
 // of silent train/serve skew in on-device ML.
 
+import { Image } from "react-native";
 import * as ImageManipulator from "expo-image-manipulator";
 import jpeg from "jpeg-js";
 import { MODEL_INPUT_SIZE as SIZE } from "../config";
-import { readBase64 } from "../util/fs";
 
 async function getImageSize(uri: string): Promise<{ width: number; height: number }> {
   return new Promise((resolve, reject) => {
-    // RN's Image.getSize works with file:// URIs; only dimensions are needed.
-    const { Image } = require("react-native");
     Image.getSize(
       uri,
       (width: number, height: number) => resolve({ width, height }),
