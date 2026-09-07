@@ -17,7 +17,12 @@ node_modules/
 dist/
 web-build/
 *.log
+_eas_build*.log
 app/.expo/
+tmp_test_images/
+tmp_sharp/
+model_training/redchili/*.txt
+model_training/plan/
 
 # OS cruft
 Thumbs.db
