@@ -26,11 +26,6 @@ export async function persistPhoto(tempUri: string): Promise<string> {
   return dest;
 }
 
-export async function readBase64(uri: string): Promise<string> {
-  return FileSystem.readAsStringAsync(uri, {
-    encoding: FileSystem.EncodingType.Base64,
-  });
-}
 
 export function deleteFile(uri: string): void {
   // Fire-and-forget helper for pruning; callers already handle errors.
