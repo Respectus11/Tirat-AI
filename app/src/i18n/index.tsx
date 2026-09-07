@@ -32,13 +32,10 @@ const Ctx = createContext<LocaleCtx>({
 });
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Language>(DEFAULT_LANG);
-
-  // Restore persisted choice once at startup.
-  useEffect(() => {
+  const [lang, setLangState] = useState<Language>(() => {
     const saved = getKV(LANG_KEY);
-    if (saved === "am" || saved === "en") setLangState(saved);
-  }, []);
+    return saved === "am" || saved === "en" ? saved : DEFAULT_LANG;
+  });
 
   const value = useMemo<LocaleCtx>(
     () => ({
