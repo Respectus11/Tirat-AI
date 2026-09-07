@@ -13,7 +13,7 @@ import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
 import labels from "../../assets/models/labels.json";
 import redchiliLabels from "../../assets/models/redchili_labels.json";
-import { CONFIDENCE_THRESHOLD, RED_RATIO_MIN } from "../config";
+import { CONFIDENCE_THRESHOLD, RED_RATIO_MIN, TEFF_BROWN_RATIO_MIN, TEXTURE_VARIANCE_MIN } from "../config";
 import { imageToModelInput } from "./preprocess";
 
 export type FoodType = "teff" | "redchili";
@@ -92,7 +92,9 @@ function getModel(foodType: FoodType = "redchili"): Promise<TfliteModel> {
       console.log(`[tflite] ${foodType} model loaded (android_asset)`);
       return model;
     })().catch((err) => {
-      modelCache[foodType] = null;
+      // Clear the cache entry so subsequent scan attempts can retry loading,
+      // instead of permanently returning null after a transient failure.
+      delete modelCache[foodType];
       throw err;
     });
   }
@@ -145,13 +147,22 @@ export async function analyzePhoto(
   }
 
   try {
-    const { input, redRatio } = await imageToModelInput(photoUri);
+    const { input, redRatio, brownRatio, textureVariance } = await imageToModelInput(photoUri);
     const outputs: ArrayBuffer[] = model.runSync([input.buffer as ArrayBuffer]);
 
+    // Universal texture gate: solid-color surfaces (walls, screens, paper,
+    // dark pockets) have near-zero pixel variance — not food for any mode.
+    if (textureVariance < TEXTURE_VARIANCE_MIN) {
+      return {
+        status: "not_food",
+        message: `Image texture variance ${textureVariance.toFixed(0)} < minimum ${TEXTURE_VARIANCE_MIN} — appears to be a uniform surface, not a food sample`,
+      };
+    }
+
     if (foodType === "redchili") {
-      // Not-food gate: chili powder fills the frame with red-dominant pixels.
-      // Hands, tables and walls don't — reject them before the model's answer
-      // can be mistaken for a verdict.
+      // Red chili color gate: chili powder fills the frame with red pixels.
+      // Hands, tables and walls don't — reject before the model can give a
+      // false verdict.
       if (redRatio < RED_RATIO_MIN) {
         return {
           status: "not_food",
@@ -182,6 +193,13 @@ export async function analyzePhoto(
     }
 
     // Teff pipeline
+    // Teff color gate: flour is warm brown/tan — reject non-teff objects.
+    if (brownRatio < TEFF_BROWN_RATIO_MIN) {
+      return {
+        status: "not_food",
+        message: `Brown/tan pixel ratio ${(brownRatio * 100).toFixed(0)}% < threshold — does not look like teff flour`,
+      };
+    }
     const verdictBuf = outputs.find((b) => b.byteLength === TEFF_CLASS_KEYS.length * 4);
     const pctBuf = outputs.find((b) => b.byteLength === PCT_BINS.length * 4);
     if (!verdictBuf || !pctBuf) {
