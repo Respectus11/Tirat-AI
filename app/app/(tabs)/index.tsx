@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import * as Haptics from "expo-haptics";
 import { useLocale } from "../../src/i18n";
 import { colors, radius, shadows, spacing, typography } from "../../src/theme";
@@ -30,7 +29,7 @@ export default function ScanScreen() {
   const [flashOn, setFlashOn] = useState(false);
   const [busy, setBusy] = useState(false);
   const [focused, setFocused] = useState(true);
-  const [foodType, setFoodType] = useState<"teff" | "redchili">("teff");
+  const [foodType, setFoodType] = useState<"teff" | "redchili">("redchili");
 
   // Slow breathing pulse on the viewfinder guide (native driver, opacity only).
   const glow = useRef(new Animated.Value(0)).current;
