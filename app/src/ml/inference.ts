@@ -43,10 +43,12 @@ const MODEL_FILES: Record<FoodType, string> = {
   redchili: "redchili_model.tflite",
 };
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const MODEL_MODULES = {
   teff: require("../../assets/models/tirat_model.tflite"),
   redchili: require("../../assets/models/redchili_model.tflite"),
 };
+/* eslint-enable @typescript-eslint/no-require-imports */
 
 async function materializeFromAndroidAsset(foodType: FoodType): Promise<string> {
   const fileName = MODEL_FILES[foodType];
@@ -70,7 +72,7 @@ async function materializeFromAndroidAsset(foodType: FoodType): Promise<string> 
   return dest;
 }
 
-function getModel(foodType: FoodType = "teff"): Promise<TfliteModel> {
+function getModel(foodType: FoodType = "redchili"): Promise<TfliteModel> {
   if (!modelCache[foodType]) {
     modelCache[foodType] = (async () => {
       try {
@@ -133,7 +135,7 @@ function argmax(a: Float32Array): number {
 
 export async function analyzePhoto(
   photoUri: string,
-  foodType: FoodType = "teff",
+  foodType: FoodType = "redchili",
 ): Promise<AnalysisResult> {
   let model: TfliteModel;
   try {
