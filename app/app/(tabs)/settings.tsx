@@ -1,4 +1,4 @@
-﻿import React, { useState } from "react";
+import React, { useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -214,7 +214,7 @@ export default function SettingsScreen() {
           <View style={styles.divider} />
           <View style={styles.metaRow}>
             <Text style={styles.metaKey}>Model Input</Text>
-            <Text style={styles.metaVal}>224 × 224 px · TFLite INT8</Text>
+            <Text style={styles.metaVal}>224 × 224 px · TFLite Float16</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.metaRow}>
