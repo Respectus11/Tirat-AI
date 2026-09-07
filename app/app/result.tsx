@@ -99,7 +99,7 @@ export default function ResultScreen() {
   const insets = useSafeAreaInsets();
   const isAmharic = lang === "am";
   const params = useLocalSearchParams<{ photo?: string; foodType?: FoodType }>();
-  const foodType = params.foodType ?? "teff";
+  const foodType = params.foodType ?? "redchili";
   const [phase, setPhase] = useState<Phase>({ kind: "analyzing" });
 
   // Guards so tapping Retry never persists the same scan twice.
@@ -176,9 +176,10 @@ export default function ResultScreen() {
     } else {
       setPhase({ kind: "error", message: "Missing photo parameter", model: false });
     }
-    return () => { isCancelled.current = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    return () => {
+      isCancelled.current = true;
+    };
+  }, [params.photo, run]);
 
   if (phase.kind === "analyzing") {
     return (
