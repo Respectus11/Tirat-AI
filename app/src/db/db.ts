@@ -153,7 +153,7 @@ export function markUploaded(resultId: number): void {
   db.runSync(`UPDATE upload_queue SET status = 'uploaded' WHERE result_id = ?`, [resultId]);
 }
 
-export function nextPendingUploads(limit = 10): Array<{ result_id: number; photo_path: string }> {
+export function nextPendingUploads(limit = 10): { result_id: number; photo_path: string }[] {
   return db.getAllSync<{ result_id: number; photo_path: string }>(
     `SELECT q.result_id AS result_id, r.photo_path AS photo_path
      FROM upload_queue q JOIN results r ON r.id = q.result_id
