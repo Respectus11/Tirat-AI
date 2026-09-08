@@ -1,8 +1,8 @@
               precision    recall  f1-score   support
 
-        pure      0.925     1.000     0.961        49
- adulterated      1.000     0.992     0.996       474
+        pure      0.938     0.968     0.952        62
+ adulterated      0.967     0.935     0.951        62
 
-    accuracy                          0.992       523
-   macro avg      0.962     0.996     0.978       523
-weighted avg      0.993     0.992     0.992       523
+    accuracy                          0.952       124
+   macro avg      0.952     0.952     0.952       124
+weighted avg      0.952     0.952     0.952       124

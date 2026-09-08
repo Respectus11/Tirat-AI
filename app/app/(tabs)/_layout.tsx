@@ -2,13 +2,16 @@
 
 import { Tabs } from "expo-router";
 import React from "react";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocale } from "../../src/i18n";
 import { colors, typography } from "../../src/theme";
 
 export default function TabsLayout() {
   const { t, lang } = useLocale();
+  const insets = useSafeAreaInsets();
   const isAmharic = lang === "am";
+  const bottomPadding = Math.max(insets.bottom, 10);
 
   return (
     <Tabs
@@ -19,8 +22,8 @@ export default function TabsLayout() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.line,
-          height: 60,
-          paddingBottom: 8,
+          height: 54 + bottomPadding,
+          paddingBottom: bottomPadding,
           paddingTop: 6,
         },
         tabBarLabelStyle: {

@@ -8,12 +8,12 @@
     "dtype": "float32",
     "range": "0..255 (normalized inside graph)"
   },
-  "best_val_verdict_accuracy": 0.9981,
+  "best_val_verdict_accuracy": 0.9675,
   "epochs_phase1": 9,
   "epochs_phase2": 10,
   "dataset_sizes": {
-    "train": 4181,
-    "val": 523,
-    "test": 523
+    "train": 985,
+    "val": 123,
+    "test": 124
   }
 }

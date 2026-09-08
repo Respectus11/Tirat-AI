@@ -1,32 +1,32 @@
 {
-  "total": 5227,
+  "total": 1232,
   "raw_folder_counts": {
-    "C1_PWH": 246,
-    "C2_AWH": 1043,
-    "WH00": 246,
-    "WHBM_10": 246,
-    "WHBM_15": 248,
-    "WHBM_5": 246,
-    "WHGM_10": 246,
-    "WHGM_15": 246,
-    "WHGM_5": 246,
-    "WHRB_10": 246,
-    "WHRB_15": 246,
-    "WHRB_5": 246,
-    "WHWB_10": 246,
-    "WHWB_15": 246,
-    "WHWB_5": 246,
-    "WHWS_10": 246,
-    "WHWS_15": 246,
-    "WHWS_5": 246
+    "C1_PWH": 308,
+    "WH00": 308,
+    "C2_AWH": 39,
+    "WHBM_10": 39,
+    "WHBM_15": 39,
+    "WHBM_5": 39,
+    "WHGM_10": 39,
+    "WHGM_15": 39,
+    "WHGM_5": 39,
+    "WHRB_10": 39,
+    "WHRB_15": 38,
+    "WHRB_5": 38,
+    "WHWB_10": 38,
+    "WHWB_15": 38,
+    "WHWB_5": 38,
+    "WHWS_10": 38,
+    "WHWS_15": 38,
+    "WHWS_5": 38
   },
   "per_class": {
-    "pure": 492,
-    "adulterated": 4735
+    "pure": 616,
+    "adulterated": 616
   },
   "sizes": {
-    "train": 4181,
-    "val": 523,
-    "test": 523
+    "train": 985,
+    "val": 123,
+    "test": 124
   }
 }

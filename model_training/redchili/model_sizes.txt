@@ -1,4 +1,0 @@
-File: labels.json, Size: 419 bytes
-File: redchili_labels.json, Size: 337 bytes
-File: redchili_model.tflite, Size: 0 bytes
-File: tirat_model.tflite, Size: 593 bytes

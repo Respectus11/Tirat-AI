@@ -1,4 +1,0 @@
-Searching Python dirs:
-C:\Users\hp\AppData\Local\Programs\Python
-C:\Users\hp\AppData\Local\Python\pythoncore-3.14-64
-  -> Found: C:\Users\hp\AppData\Local\Python\pythoncore-3.14-64\python.exe

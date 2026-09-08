@@ -157,15 +157,15 @@ def build_file_lists(data_dir: Path | None = None):
     if not subfolders:
         raise SystemExit(f"[!] No subdirectories found in '{data_dir}'.")
 
+    pure_paths, pure_folders = [], []
+    adulterated_dict = {}
     raw_classes = {}
+
     for folder in subfolders:
         name = folder.name
-        # C1_PWH = pure (DS I), WH00 = 0% level (DS II). C2_AWH is the
-        # ADULTERATED class of DS I — mapping it to 'pure' was the label
-        # poisoning bug (see dataset_structure.txt + module docstring).
-        target_cls = 0 if name.startswith(PURE_FOLDERS) else 1
-
-        raw_classes[folder.name] = CLASS_NAMES[target_cls]
+        is_pure = name.startswith(PURE_FOLDERS)
+        target_cls = 0 if is_pure else 1
+        raw_classes[name] = CLASS_NAMES[target_cls]
 
         files = sorted(
             p for p in folder.rglob("*")
@@ -173,13 +173,40 @@ def build_file_lists(data_dir: Path | None = None):
             and not p.name.startswith(".")
             and p.stat().st_size > 0
         )
-        for p in files:
-            paths.append(str(p))
-            cls_labels.append(target_cls)
-            raw_folder_labels.append(folder.name)
+        if is_pure:
+            for p in files:
+                pure_paths.append(str(p))
+                pure_folders.append(name)
+        else:
+            adulterated_dict[name] = [str(p) for p in files]
+
+    n_pure = len(pure_paths)
+    print(f"[data_prep_redchili] Found {n_pure} pure images ({Counter(pure_folders)})")
+    
+    # Balance 1:1: sample equally across all adulterated classes to match n_pure
+    adulterated_paths, adulterated_folders = [], []
+    n_adulterated_folders = len(adulterated_dict)
+    rng = np.random.RandomState(SEED)
+    
+    # Distribute samples as evenly as possible across all adulterant folders
+    per_folder = n_pure // n_adulterated_folders
+    remainder = n_pure % n_adulterated_folders
+    
+    for idx, (f_name, f_files) in enumerate(sorted(adulterated_dict.items())):
+        sample_count = per_folder + (1 if idx < remainder else 0)
+        chosen = rng.choice(f_files, size=min(sample_count, len(f_files)), replace=False)
+        for p in chosen:
+            adulterated_paths.append(p)
+            adulterated_folders.append(f_name)
+
+    print(f"[data_prep_redchili] Sampled {len(adulterated_paths)} adulterated images across {n_adulterated_folders} folders for 1:1 balance")
+
+    paths = pure_paths + adulterated_paths
+    cls_labels = [0] * len(pure_paths) + [1] * len(adulterated_paths)
+    raw_folder_labels = pure_folders + adulterated_folders
 
     total = len(paths)
-    print(f"[data_prep_redchili] Found {total} images across {len(subfolders)} raw folders.")
+    print(f"[data_prep_redchili] Total dataset: {total} images (Pure: {len(pure_paths)}, Adulterated: {len(adulterated_paths)})")
     print(f"[data_prep_redchili] Folder mapping: {json.dumps(raw_classes, indent=2)}")
 
     indices = np.arange(total)
