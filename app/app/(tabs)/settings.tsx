@@ -13,6 +13,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Haptics from "expo-haptics";
+import Constants from "expo-constants";
 import { getKV, pendingUploadCount, setKV } from "../../src/db/db";
 import { useLocale, type Language } from "../../src/i18n";
 import { flushQueue } from "../../src/upload/uploader";
@@ -205,9 +206,11 @@ export default function SettingsScreen() {
             />
             <View style={styles.aboutMeta}>
               <Text style={styles.aboutAppName}>ጥራት (Tirat AI)</Text>
-              <Text style={styles.aboutVersion}>v0.1.0 · On-device MobileNetV3</Text>
+              <Text style={styles.aboutVersion}>
+                {`v${Constants.expoConfig?.version ?? "0.2.1"} · On-device MobileNetV3`}
+              </Text>
               <Text style={styles.aboutDesc}>
-                Open-source AI tool to protect Ethiopian consumers and farmers from teff flour adulteration.
+                Open-source AI tool to screen food samples (pure red chili powder and teff flour) for adulteration.
               </Text>
             </View>
           </View>
