@@ -10,9 +10,11 @@
 [![Latency](https://img.shields.io/badge/Inference%20Latency-%3C%2045%20ms-green.svg)](#architecture--edge-ai-specifications)
 [![Version](https://img.shields.io/badge/App%20Version-v0.2.1-purple.svg)](app/package.json)
 
-<br />
+</div>
 
-<img src="docs/images/tirat_ai_hero_banner.jpg" alt="Tirat AI Hero Banner" width="100%" style="border-radius: 12px; margin: 16px 0;" />
+![Tirat AI Hero Banner](./docs/images/tirat_ai_hero_banner.png)
+
+<div align="center">
 
 <p align="center">
   <b>Tirat</b> (ጥራት, Amharic for <i>"Quality"</i>) is an open-source, fully offline <b>Edge Computer Vision & AI screening system</b> engineered to protect consumers, merchants, and smallholder farmers across East Africa from food fraud and industrial bulk adulteration.
@@ -129,9 +131,7 @@ Tirat AI has been subjected to exhaustive multi-dimensional testing across 1,800
 ### 1. The 1,800-Sample Ultra Test Benchmark
 Evaluated across all 16 concentration levels and pure samples in the test corpus:
 
-<div align="center">
-  <img src="docs/images/ultra_test_dashboard.png" alt="Tirat AI Ultra Test Dashboard" width="92%" style="border-radius: 8px; margin: 12px 0;" />
-</div>
+![Tirat AI Ultra Test Dashboard](./docs/images/ultra_test_dashboard.png)
 
 * **Overall Accuracy**: **96.0%**
 * **ROC-AUC Score**: **0.998**
@@ -144,9 +144,7 @@ Evaluated across all 16 concentration levels and pure samples in the test corpus
 ### 2. Explainable AI (Grad-CAM) Spatial Heatmaps
 To guarantee the model bases decisions on physical foreign particulates rather than background lighting or lens vignetting, we generate **Gradient-weighted Class Activation Mapping (Grad-CAM)** heatmaps at the final convolutional layer:
 
-<div align="center">
-  <img src="docs/images/gradcam_verification_audit.png" alt="Grad-CAM Spatial Verification" width="92%" style="border-radius: 8px; margin: 12px 0;" />
-</div>
+![Grad-CAM Spatial Verification](./docs/images/gradcam_verification_audit.png)
 
 * **Pure Samples (`WH00`)**: Activations remain diffuse and evenly distributed across the red matrix.
 * **Adulterated Samples**: Activations focus into sharp, concentrated hotspots over foreign grain fibers, bran flakes, and sawdust particulates.
@@ -157,9 +155,7 @@ To guarantee the model bases decisions on physical foreign particulates rather t
 ### 3. African & Ethiopian Market Conditions Test Suite
 Simulates realistic open-air market conditions (Merkato / Shola markets), container backgrounds, and kitchen lookalikes:
 
-<div align="center">
-  <img src="docs/images/ethiopian_market_dashboard.png" alt="Ethiopian Market Dashboard" width="92%" style="border-radius: 8px; margin: 12px 0;" />
-</div>
+![Ethiopian Market Dashboard](./docs/images/ethiopian_market_dashboard.png)
 
 * **Cross-Food Lookalike Audit**: Successfully isolates chili powder from roasted barley (*Beso*), turmeric (*Ird*), highland red clay soil (*Ye-key afer*), teff grain, and porous injera sourdough textures.
 * **Camera Geometry Resilience**: Evaluated under 15°–45° perspective angles and harsh high-elevation solar contrast shadows.
