@@ -32,3 +32,15 @@ Thumbs.db
 *.apk
 *.aab
 **/checkpoints/
+
+# Presentations & slides (personal)
+*.pptx
+*.ppt
+
+# Training logs, debug CSVs, and internal reviews
+*.log
+*.csv
+model_training/redchili/outputs/*.csv
+SKILL.md
+REVIEW.md
+RELEASE_NOTES.md
