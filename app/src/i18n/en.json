@@ -48,12 +48,15 @@
   "about": "About",
   "recent_scans": "Recent scans",
   "food_badge_teff": "🌾 Teff Flour",
-  "food_badge_redchili": "🌶 Red Chili Powder",
+  "food_badge_redchili": "🌶 Pure Red Chili Powder",
   "verdict_adulterated": "Adulterated red chili",
   "not_food_title": "Not a food sample",
-  "not_food_body": "This doesn't look like chili powder. Fill the frame with the powder sample under good lighting and retake.",
+  "not_food_body": "This doesn't look like pure chili powder. Fill the frame with the powder sample under good lighting and retake.",
   "not_food_teff_body": "This doesn't look like teff flour. Fill the frame with the flour sample under good lighting and retake.",
   "not_food_texture_body": "The image appears to be a blank or uniform surface. Please capture a close-up of the actual flour or powder sample.",
-  "redchili_disclaimer": "Trained on a public reference dataset — not yet validated on Ethiopian market samples.",
+  "not_food_blur_body": "Photo is blurry or out of focus. Hold phone steady and retake.",
+  "instr_hold_flat": "Hold phone flat (90°) directly above powder",
+  "instr_fill_box": "Fill box with powder only (no sack or basket edges)",
+  "redchili_disclaimer": "Calibrated for pure ground red chili pepper. Not for finished multi-spice Berbere blends (containing fenugreek, korarima, garlic).",
   "teff_demo_badge": "Teff mode is a demo — the real teff model is still in training. Red chili mode is fully active."
 }
