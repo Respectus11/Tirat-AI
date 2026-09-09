@@ -3,7 +3,6 @@
 # ጥራት · Tirat AI
 ### On-Device Edge AI for Food Adulteration Screening
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![Mobile Engine](https://img.shields.io/badge/Runtime-React%20Native%20%7C%20Expo%2057-blue.svg)](https://expo.dev/)
 [![ML Engine](https://img.shields.io/badge/Inference-Fast--TFLite%20Float16-orange.svg)](https://github.com/mrousavy/react-native-fast-tflite)
 [![Model Size](https://img.shields.io/badge/Model%20Footprint-1.95%20MB-success.svg)](#architecture--edge-ai-specifications)
@@ -274,8 +273,9 @@ Tirat AI is built with East African consumers and vendors as first-class users:
 
 ---
 
-## 📜 License & Acknowledgments
+## 🙏 Special Thanks & Acknowledgments
 
-This project is licensed under the **MIT License**.
-
-We express our gratitude to **Dilpreet Singh Brar, Birmohan Singh, and Vikas Nanda** for their foundational open-access research (*Sustainable Food Technology*, Royal Society of Chemistry, 2025) and Mendeley Data for making the Wonder Hot dataset accessible to the global food safety community.
+Special thanks and heartfelt gratitude to:
+* **EGATE (Ethiopian Giftedness and Talent Center)** for their invaluable platform, guidance, and dedicated support for technological innovation and youth empowerment.
+* My esteemed mentors, **Dr. Abeba** and **Dr. Hailay Beyene**, for their indispensable mentorship, technical guidance, insights, and encouragement throughout the research and development of Tirat AI.
+* **Dilpreet Singh Brar, Birmohan Singh, and Vikas Nanda** for their foundational open-access research (*Sustainable Food Technology*, Royal Society of Chemistry, 2025) and Mendeley Data for making the Wonder Hot reference dataset accessible to the global food safety community.
