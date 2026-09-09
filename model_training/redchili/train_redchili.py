@@ -29,6 +29,12 @@ DROPOUT = 0.3
 
 
 def build_model() -> tf.keras.Model:
+    """Multi-Scale Feature Fusion MobileNetV3-Small architecture.
+    Inspired by DenseNet feature reuse (Brar et al., RSC 2025):
+    Extracts intermediate micro-texture feature maps (~14x14) alongside
+    the final semantic feature map (~7x7), pooling and concatenating both
+    to retain foreign particulate sharpness without the 57MB weight penalty.
+    """
     inputs = tf.keras.Input(shape=(INPUT_SIZE, INPUT_SIZE, 3), name="image")
     x = tf.keras.layers.Rescaling(1.0 / 127.5, offset=-1.0)(inputs)  # -> [-1, 1]
 
@@ -40,18 +46,42 @@ def build_model() -> tf.keras.Model:
         pooling=None,
     )
     base.trainable = False
-    x = base(x, training=False)
 
-    x = tf.keras.layers.GlobalAveragePooling2D(name="gap")(x)
-    x = tf.keras.layers.Dropout(DROPOUT, name="dropout")(x)
-    x = tf.keras.layers.Dense(HEAD_UNITS, activation="relu", name="trunk")(x)
+    # Locate intermediate layer preserving micro-textures
+    intermediate_layer = None
+    for layer in base.layers:
+        if any(name in layer.name for name in ("expanded_conv_4/Add", "expanded_conv_5/Add", "expanded_conv_4/project")):
+            intermediate_layer = layer
+            break
+    if intermediate_layer is None:
+        intermediate_layer = base.layers[len(base.layers) // 2]
 
-    verdict = tf.keras.layers.Dense(len(CLASS_NAMES), activation="softmax", name="verdict")(x)
+    feature_extractor = tf.keras.Model(
+        inputs=base.input,
+        outputs=[intermediate_layer.output, base.output],
+        name="MobileNetV3Small",
+    )
+    inter_feat, final_feat = feature_extractor(x, training=False)
 
-    model = tf.keras.Model(inputs=inputs, outputs=verdict, name="redchili_mobilenetv3s")
+    gap_inter = tf.keras.layers.GlobalAveragePooling2D(name="gap_intermediate")(inter_feat)
+    gap_final = tf.keras.layers.GlobalAveragePooling2D(name="gap_final")(final_feat)
+
+    fused = tf.keras.layers.Concatenate(name="multiscale_fusion")([gap_inter, gap_final])
+    fused = tf.keras.layers.Dropout(DROPOUT, name="dropout")(fused)
+    trunk = tf.keras.layers.Dense(HEAD_UNITS, activation="relu", name="trunk")(fused)
+
+    verdict = tf.keras.layers.Dense(len(CLASS_NAMES), activation="softmax", name="verdict")(trunk)
+
+    model = tf.keras.Model(inputs=inputs, outputs=verdict, name="redchili_mobilenetv3s_multiscale")
+
+    # Optimizer: AdamW with weight decay 1e-4 as validated by Brar et al. (RSC 2025)
+    opt_cls = getattr(tf.keras.optimizers, "AdamW", tf.keras.optimizers.Adam)
+    opt_kwargs = {"learning_rate": 1e-3}
+    if hasattr(tf.keras.optimizers, "AdamW"):
+        opt_kwargs["weight_decay"] = 1e-4
 
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(1e-3),
+        optimizer=opt_cls(**opt_kwargs),
         loss="sparse_categorical_crossentropy",
         metrics=["accuracy"],
     )
@@ -100,6 +130,8 @@ def main() -> None:
     ap.add_argument("--epochs-ft", type=int, default=15, help="max epochs, phase 2")
     ap.add_argument("--skip-phase1", action="store_true",
                     help="skip Phase 1; load best_phase1.keras and run only Phase 2")
+    ap.add_argument("--balance-1to1", action="store_true",
+                    help="Sample adulterated 1:1 with pure (default: False, trains on full dataset with class weighting)")
     args = ap.parse_args()
 
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -107,7 +139,7 @@ def main() -> None:
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
     print("[train_redchili] Loading datasets...")
-    datasets, stats, class_names = get_datasets_redchili(cache=True)
+    datasets, stats, class_names = get_datasets_redchili(cache=True, balance_1to1=args.balance_1to1)
     train_ds, val_ds, test_ds = datasets["train"], datasets["val"], datasets["test"]
     print(f"[train_redchili] {json.dumps(stats['sizes'])} — classes={class_names}")
 
@@ -127,8 +159,10 @@ def main() -> None:
                      restore_best_weights=True, verbose=1)
 
     if args.skip_phase1:
-        # Load the best Phase 1 checkpoint and run only Phase 2
+        # Load the best Phase 1 checkpoint (or previous full model) and run only Phase 2
         p1_path = ckpt_dir / "best_phase1.keras"
+        if not p1_path.exists() and (OUTPUTS_DIR / "redchili_model.keras").exists():
+            p1_path = OUTPUTS_DIR / "redchili_model.keras"
         print(f"[train_redchili] --skip-phase1: loading {p1_path}")
         model = tf.keras.models.load_model(p1_path)
         h1 = {}
@@ -152,8 +186,13 @@ def main() -> None:
 
     # ---------------- Phase 2: fine-tune top of backbone ----------------
     unfreeze_top(model, n_layers=40)
+    opt_cls_ft = getattr(tf.keras.optimizers, "AdamW", tf.keras.optimizers.Adam)
+    opt_kwargs_ft = {"learning_rate": 1e-5}
+    if hasattr(tf.keras.optimizers, "AdamW"):
+        opt_kwargs_ft["weight_decay"] = 1e-4
+
     model.compile(
-        optimizer=tf.keras.optimizers.Adam(1e-5),
+        optimizer=opt_cls_ft(**opt_kwargs_ft),
         loss="sparse_categorical_crossentropy",
         metrics=["accuracy"],
     )
