@@ -1,0 +1,223 @@
+{
+  "timestamp": "2026-09-08T22:57:15Z",
+  "model": "redchili_model.tflite",
+  "adulterants": {
+    "Pure Ethiopian Wonder Hot (C1_PWH)": {
+      "tested": 75,
+      "accuracy": 0.9867,
+      "avg_confidence": 0.9395,
+      "gate_pass_rate": 1.0,
+      "class": "pure"
+    },
+    "Wood Sawdust \u2014 Ye-inchet fafuka 5% (WHWS_5)": {
+      "tested": 75,
+      "accuracy": 0.96,
+      "avg_confidence": 0.8789,
+      "gate_pass_rate": 1.0,
+      "class": "adulterated"
+    },
+    "Wood Sawdust \u2014 Ye-inchet fafuka 10% (WHWS_10)": {
+      "tested": 75,
+      "accuracy": 0.9867,
+      "avg_confidence": 0.9476,
+      "gate_pass_rate": 1.0,
+      "class": "adulterated"
+    },
+    "Wood Sawdust \u2014 Ye-inchet fafuka 15% (WHWS_15)": {
+      "tested": 75,
+      "accuracy": 0.9867,
+      "avg_confidence": 0.9694,
+      "gate_pass_rate": 1.0,
+      "class": "adulterated"
+    },
+    "Brick Powder \u2014 Shekla duket 5% (WHBM_5)": {
+      "tested": 75,
+      "accuracy": 0.8933,
+      "avg_confidence": 0.8278,
+      "gate_pass_rate": 0.9733,
+      "class": "adulterated"
+    },
+    "Brick Powder \u2014 Shekla duket 10% (WHBM_10)": {
+      "tested": 75,
+      "accuracy": 0.9467,
+      "avg_confidence": 0.8773,
+      "gate_pass_rate": 0.9467,
+      "class": "adulterated"
+    },
+    "Brick Powder \u2014 Shekla duket 15% (WHBM_15)": {
+      "tested": 75,
+      "accuracy": 0.9067,
+      "avg_confidence": 0.8828,
+      "gate_pass_rate": 0.96,
+      "class": "adulterated"
+    },
+    "Wheat Bran Filler \u2014 Ye-sinde gulo 5% (WHWB_5)": {
+      "tested": 75,
+      "accuracy": 0.8933,
+      "avg_confidence": 0.817,
+      "gate_pass_rate": 0.96,
+      "class": "adulterated"
+    },
+    "Wheat Bran Filler \u2014 Ye-sinde gulo 10% (WHWB_10)": {
+      "tested": 75,
+      "accuracy": 0.96,
+      "avg_confidence": 0.899,
+      "gate_pass_rate": 0.96,
+      "class": "adulterated"
+    },
+    "Wheat Bran Filler \u2014 Ye-sinde gulo 15% (WHWB_15)": {
+      "tested": 75,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9245,
+      "gate_pass_rate": 1.0,
+      "class": "adulterated"
+    },
+    "Milling Husk Chaff \u2014 Rice/Cereal 10% (WHRB_10)": {
+      "tested": 75,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9472,
+      "gate_pass_rate": 0.9867,
+      "class": "adulterated"
+    }
+  },
+  "lookalikes": {
+    "cases": {
+      "Authentic Injera Flatbread (ayen texture)": {
+        "red_ratio": 0.2115,
+        "texture_variance": 3300.6,
+        "passed_gates": true,
+        "raw_prediction": "adulterated",
+        "confidence": 1.0,
+        "is_safely_intercepted": false,
+        "reasons": []
+      },
+      "Authentic Ethiopian Teff Flour Bag": {
+        "red_ratio": 0.0523,
+        "texture_variance": 1786.23,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.8588,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (5.2% < 12%)"
+        ]
+      },
+      "Authentic Brown Teff Grains": {
+        "red_ratio": 0.0,
+        "texture_variance": 946.44,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.5388,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (0.0% < 12%)",
+          "Inconclusive Margin (53.9% < 70%)"
+        ]
+      },
+      "Ethiopian Turmeric Powder (Ird)": {
+        "red_ratio": 0.1117,
+        "texture_variance": 141.63,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.8559,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (11.2% < 12%)",
+          "Failed Texture Variance (141.6 < 150)"
+        ]
+      },
+      "Highland Red Clay Soil (Ye-key afer)": {
+        "red_ratio": 0.9939,
+        "texture_variance": 195.73,
+        "passed_gates": true,
+        "raw_prediction": "adulterated",
+        "confidence": 0.8682,
+        "is_safely_intercepted": false,
+        "reasons": []
+      },
+      "Roasted Barley Powder (Beso)": {
+        "red_ratio": 0.0619,
+        "texture_variance": 99.64,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.9473,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (6.2% < 12%)",
+          "Failed Texture Variance (99.6 < 150)"
+        ]
+      },
+      "Traditional Mesob/Sefed Woven Basket": {
+        "red_ratio": 0.0513,
+        "texture_variance": 4626.31,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.8782,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (5.1% < 12%)"
+        ]
+      },
+      "Woven Market Grain Sack (Madaberia)": {
+        "red_ratio": 0.0,
+        "texture_variance": 1886.19,
+        "passed_gates": false,
+        "raw_prediction": "adulterated",
+        "confidence": 0.892,
+        "is_safely_intercepted": true,
+        "reasons": [
+          "Failed Red Ratio (0.0% < 12%)"
+        ]
+      }
+    },
+    "safety_rate": 0.75
+  },
+  "perspectives": {
+    "1. Perpendicular Planar View (90\u00b0 Top-Down)": {
+      "accuracy": 1.0,
+      "avg_confidence": 0.9215,
+      "gate_pass_rate": 1.0
+    },
+    "2. Casual Handheld Tilt (15\u00b0 Oblique Angle)": {
+      "accuracy": 0.6167,
+      "avg_confidence": 0.7462,
+      "gate_pass_rate": 1.0
+    },
+    "3. Slanted Market Counter View (30\u00b0 Angle)": {
+      "accuracy": 0.5,
+      "avg_confidence": 0.7363,
+      "gate_pass_rate": 1.0
+    },
+    "4. Steep Grain Sack View (45\u00b0 Severe Slant)": {
+      "accuracy": 0.5667,
+      "avg_confidence": 0.7257,
+      "gate_pass_rate": 1.0
+    },
+    "5. Midday Phone Shadow (Addis Ababa Sun)": {
+      "accuracy": 0.9167,
+      "avg_confidence": 0.891,
+      "gate_pass_rate": 1.0
+    },
+    "6. High-Altitude UV Glare (Addis 2,400m Sun)": {
+      "accuracy": 0.85,
+      "avg_confidence": 0.866,
+      "gate_pass_rate": 1.0
+    },
+    "7. Sample Inside Traditional Woven Mesob Basket": {
+      "accuracy": 0.5333,
+      "avg_confidence": 0.8902,
+      "gate_pass_rate": 1.0
+    },
+    "8. Sample Inside Grain Sack (Madaberia Border)": {
+      "accuracy": 0.5,
+      "avg_confidence": 0.928,
+      "gate_pass_rate": 1.0
+    },
+    "9. Sample Inside Terracotta Clay Dish (Dist)": {
+      "accuracy": 0.8833,
+      "avg_confidence": 0.8323,
+      "gate_pass_rate": 1.0
+    }
+  },
+  "elapsed_sec": 20.43
+}
