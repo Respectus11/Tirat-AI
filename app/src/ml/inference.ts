@@ -13,7 +13,7 @@ import { Asset } from "expo-asset";
 import * as FileSystem from "expo-file-system/legacy";
 import labels from "../../assets/models/labels.json";
 import redchiliLabels from "../../assets/models/redchili_labels.json";
-import { CONFIDENCE_THRESHOLD, RED_RATIO_MIN, TEFF_BROWN_RATIO_MIN, TEXTURE_VARIANCE_MIN } from "../config";
+import { CONFIDENCE_THRESHOLD, RED_RATIO_MIN, SHARPNESS_MIN, TEFF_BROWN_RATIO_MIN, TEXTURE_VARIANCE_MIN } from "../config";
 import { imageToModelInput } from "./preprocess";
 
 export type FoodType = "teff" | "redchili";
@@ -124,7 +124,7 @@ export interface AnalysisOk {
   foodType: FoodType;
 }
 export interface AnalysisFailed {
-  status: "model_error" | "error" | "not_food";
+  status: "model_error" | "error" | "not_food" | "blurry";
   message: string;
 }
 export type AnalysisResult = AnalysisOk | AnalysisFailed;
@@ -139,15 +139,9 @@ export async function analyzePhoto(
   photoUri: string,
   foodType: FoodType = "redchili",
 ): Promise<AnalysisResult> {
-  let model: TfliteModel;
   try {
-    model = await getModel(foodType);
-  } catch (err) {
-    return { status: "model_error", message: String(err) };
-  }
-
-  try {
-    const { input, redRatio, brownRatio, textureVariance } = await imageToModelInput(photoUri);
+    const model = await getModel(foodType);
+    const { input, redRatio, brownRatio, textureVariance, sharpnessScore } = await imageToModelInput(photoUri);
     const outputs: ArrayBuffer[] = model.runSync([input.buffer as ArrayBuffer]);
 
     // Universal texture gate: solid-color surfaces (walls, screens, paper,
@@ -156,6 +150,14 @@ export async function analyzePhoto(
       return {
         status: "not_food",
         message: `Image texture variance ${textureVariance.toFixed(0)} < minimum ${TEXTURE_VARIANCE_MIN} — appears to be a uniform surface, not a food sample`,
+      };
+    }
+
+    // Motion blur / out-of-focus gate: blurry photos destroy fine particulate boundaries.
+    if (sharpnessScore < SHARPNESS_MIN) {
+      return {
+        status: "blurry",
+        message: `Image sharpness ${sharpnessScore.toFixed(1)} < minimum ${SHARPNESS_MIN} — photo is blurry or out of focus`,
       };
     }
 

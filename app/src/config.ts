@@ -35,5 +35,12 @@ export const TEFF_BROWN_RATIO_MIN = 0.15;
  */
 export const TEXTURE_VARIANCE_MIN = 150;
 
+/**
+ * Minimum average adjacent-pixel gradient sharpness. Blurry or out-of-focus
+ * photos lose particulate boundary contrast and degrade adulteration sensitivity.
+ * Photos below this threshold trigger an automatic retake prompt.
+ */
+export const SHARPNESS_MIN = 2.4;
+
 /** Max history rows kept locally; photos of older rows are pruned with them. */
 export const HISTORY_LIMIT = 500;
