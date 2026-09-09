@@ -143,15 +143,22 @@ export default function ScanScreen() {
                 onPress={() => setFoodType("redchili")}
                 activeOpacity={0.8}
               >
-                <Text style={[styles.foodSelectorText, foodType === "redchili" && styles.foodSelectorTextActive]}>
-                  🌶 Red Chili
+                <Text style={[styles.foodSelectorText, foodType === "redchili" && styles.foodSelectorTextActive, isAmharic && styles.fontAm]}>
+                  {isAmharic ? "🌶 ንጹሕ በርበሬ" : "🌶 Pure Chili"}
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Viewfinder Target */}
+          {/* Viewfinder Target & Angle Guidance */}
           <View style={styles.guideWrap} pointerEvents="none">
+            <View style={styles.flatnessHintPill}>
+              <Ionicons name="scan-outline" size={13} color="#FFD54A" />
+              <Text style={[styles.flatnessHintText, isAmharic && styles.fontAm]}>
+                {t("instr_hold_flat")}
+              </Text>
+            </View>
+
             <View style={styles.guideBox}>
               <Animated.View
                 style={[
@@ -159,12 +166,21 @@ export default function ScanScreen() {
                   { opacity: glow.interpolate({ inputRange: [0, 1], outputRange: [0, 0.35] }) },
                 ]}
               />
+              {/* Center reticle leveling target */}
+              <View style={styles.reticleCenter}>
+                <View style={styles.reticleCircle} />
+                <View style={styles.reticleDot} />
+              </View>
               {/* Corner accents */}
               <View style={[styles.corner, styles.cornerTL]} />
               <View style={[styles.corner, styles.cornerTR]} />
               <View style={[styles.corner, styles.cornerBL]} />
               <View style={[styles.corner, styles.cornerBR]} />
             </View>
+
+            <Text style={[styles.fillHintText, isAmharic && styles.fontAm]}>
+              {t("instr_fill_box")}
+            </Text>
           </View>
 
           {/* Bottom Bar: instruction chips & shutter controls */}
@@ -311,6 +327,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  flatnessHintPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    backgroundColor: "rgba(0, 0, 0, 0.75)",
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: radius.full,
+    marginBottom: spacing.sm,
+    borderWidth: 1,
+    borderColor: "rgba(255, 213, 74, 0.4)",
+  },
+  flatnessHintText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  fillHintText: {
+    color: "rgba(255, 255, 255, 0.75)",
+    fontSize: 11,
+    marginTop: spacing.xs,
+    textAlign: "center",
+  },
   guideBox: {
     width: GUIDE_SIZE,
     height: GUIDE_SIZE,
@@ -323,6 +362,26 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFill,
     borderRadius: radius.md,
     backgroundColor: "rgba(46, 158, 91, 0.5)",
+  },
+  reticleCenter: {
+    ...StyleSheet.absoluteFill,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reticleCircle: {
+    width: 68,
+    height: 68,
+    borderRadius: 34,
+    borderWidth: 1.5,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    borderStyle: "dashed",
+  },
+  reticleDot: {
+    position: "absolute",
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: "rgba(255, 213, 74, 0.7)",
   },
   corner: {
     position: "absolute",
