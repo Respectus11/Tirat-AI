@@ -19,13 +19,13 @@ Tirat AI supports parallel detection pipelines for multiple food commodities wit
 - **Location**: `model_training/redchili/` (Red chili training scripts) and `app/assets/models/redchili_model.tflite`
 - **Dataset**: Mendeley Red Chilli Adulteration Digital Image Dataset (DS-WH-1)
 - **Output Head**: Binary classification (`pure` vs. `adulterated`)
-- **Adulterants in Dataset**: Wood sawdust, brick powder, artificial colors (Metanil Yellow/Rhodamine B), starch/rice flour, cumin/coriander spent, salt.
+- **Adulterants in Dataset**: Natural bulking agents verified by Brar et al. (RSC, 2025): **Wheat Bran (WB)**, **Rice Husk / Hull (RH)**, and **Wood Sawdust (WS)** across 16 concentration gradations (0% to 30% in 2% steps).
 - **Disclaimer**: Red chili detection is trained on a public reference dataset and displays an in-app notice that it is not yet validated on local market samples.
 
 #### Scope Decision: Binary-Only (v1)
-Red Chili model (v1) uses **binary classification only** — the output is `pure` or `adulterated` with a confidence score. Percentage-level adulteration detection (e.g. 5%, 10%, 15%) is **planned for a future model version**, pending additional labeled training data with percentage granularity.
+Red Chili model (v1) uses **binary classification only** — the output is `pure` or `adulterated` with a confidence score. Percentage-level adulteration detection (16 concentration tiers, e.g. 2%, 4%, ... 30%) is **planned for v2**, building on the paper's multi-class findings.
 
-The dataset folders (`WHBM_5/10/15`, `WHGM_5/10/15`, etc.) encode percentage levels in their names, but these were **collapsed to binary** for this phase. The app-side UI never displays a percentage figure for red chili results — `estPct` is always `null` in the red chili inference path, and all display guards (`estPct != null`) prevent any percentage from rendering.
+The dataset folders (`WHBM_5/10/15`, `WHGM_5/10/15`, `WHWS_5/10/15`, etc.) encode percentage levels in their names, but these were **collapsed to binary** for this phase. The app-side UI never displays a percentage figure for red chili results — `estPct` is always `null` in the red chili inference path, and all display guards (`estPct != null`) prevent any percentage from rendering.
 
 This is an intentional scope decision, not an undocumented limitation.
 
