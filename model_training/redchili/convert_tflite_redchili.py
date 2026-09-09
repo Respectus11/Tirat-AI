@@ -53,9 +53,30 @@ def main() -> None:
 
     conv16 = tf.lite.TFLiteConverter.from_keras_model(model)
     conv16.optimizations = [tf.lite.Optimize.DEFAULT]
-    conv16.target_spec.supported_types = [tf.float16]
+    tflite_bytes = conv16.convert()
     f16_path = OUTPUTS_DIR / "redchili_float16.tflite"
-    f16_path.write_bytes(conv16.convert())
+    f16_path.write_bytes(tflite_bytes)
+
+    # ---------------- Numeric Equivalence Check ----------------
+    print("[convert_redchili] Running float32 (Keras) vs float16 (TFLite) numeric equivalence check...")
+    import numpy as np
+    dummy_input = np.random.uniform(0.0, 255.0, size=(1, INPUT_SIZE, INPUT_SIZE, 3)).astype(np.float32)
+    keras_pred = model(dummy_input).numpy()
+
+    interp = tf.lite.Interpreter(model_content=tflite_bytes)
+    interp.allocate_tensors()
+    in_idx = interp.get_input_details()[0]["index"]
+    out_idx = interp.get_output_details()[0]["index"]
+    interp.set_tensor(in_idx, dummy_input)
+    interp.invoke()
+    tflite_pred = interp.get_tensor(out_idx)
+
+    max_delta = float(np.max(np.abs(keras_pred - tflite_pred)))
+    print(f"[convert_redchili] Max absolute delta: {max_delta:.6f}")
+    if max_delta > 0.05:
+        print("[convert_redchili] WARNING: High divergence between Keras and Float16 TFLite output!")
+    else:
+        print("[convert_redchili] Numeric equivalence verified (delta <= 0.05).")
 
     shipped = APP_MODELS_DIR / "redchili_model.tflite"
     shutil.copyfile(f16_path, shipped)
