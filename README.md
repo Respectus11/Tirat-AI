@@ -277,5 +277,5 @@ Tirat AI is built with East African consumers and vendors as first-class users:
 
 Special thanks and heartfelt gratitude to:
 * **EGATE (Ethiopian Giftedness and Talent Center)** for their invaluable platform, guidance, and dedicated support for technological innovation and youth empowerment.
-* My esteemed mentors, **Dr. Abeba** and **Dr. Hailay Beyene**, for their indispensable mentorship, technical guidance, insights, and encouragement throughout the research and development of Tirat AI.
+* My esteemed mentors, **Dr. Abebe** and **Dr. Hailay Beyene**, for their indispensable mentorship, technical guidance, insights, and encouragement throughout the research and development of Tirat AI.
 * **Dilpreet Singh Brar, Birmohan Singh, and Vikas Nanda** for their foundational open-access research (*Sustainable Food Technology*, Royal Society of Chemistry, 2025) and Mendeley Data for making the Wonder Hot reference dataset accessible to the global food safety community.
