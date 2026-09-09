@@ -1,0 +1,307 @@
+{
+  "timestamp": "2026-09-08T21:37:55Z",
+  "tflite_model": "redchili_model.tflite",
+  "total_categories_tested": 18,
+  "granular_results": {
+    "C1_PWH": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9367,
+      "low_confidence_count": 4,
+      "gate_pass_rate": 1.0,
+      "expected_class": "pure"
+    },
+    "C2_AWH": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.919,
+      "low_confidence_count": 7,
+      "gate_pass_rate": 0.9875,
+      "expected_class": "adulterated"
+    },
+    "WH00": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9385,
+      "low_confidence_count": 3,
+      "gate_pass_rate": 1.0,
+      "expected_class": "pure"
+    },
+    "WHBM_10": {
+      "total_tested": 80,
+      "correct": 77,
+      "accuracy": 0.9625,
+      "avg_confidence": 0.8837,
+      "low_confidence_count": 8,
+      "gate_pass_rate": 0.925,
+      "expected_class": "adulterated"
+    },
+    "WHBM_15": {
+      "total_tested": 80,
+      "correct": 73,
+      "accuracy": 0.9125,
+      "avg_confidence": 0.8758,
+      "low_confidence_count": 10,
+      "gate_pass_rate": 0.9625,
+      "expected_class": "adulterated"
+    },
+    "WHBM_5": {
+      "total_tested": 80,
+      "correct": 71,
+      "accuracy": 0.8875,
+      "avg_confidence": 0.839,
+      "low_confidence_count": 8,
+      "gate_pass_rate": 0.95,
+      "expected_class": "adulterated"
+    },
+    "WHGM_10": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9563,
+      "low_confidence_count": 1,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHGM_15": {
+      "total_tested": 80,
+      "correct": 78,
+      "accuracy": 0.975,
+      "avg_confidence": 0.9155,
+      "low_confidence_count": 6,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHGM_5": {
+      "total_tested": 80,
+      "correct": 74,
+      "accuracy": 0.925,
+      "avg_confidence": 0.8788,
+      "low_confidence_count": 12,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHRB_10": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9378,
+      "low_confidence_count": 1,
+      "gate_pass_rate": 0.9875,
+      "expected_class": "adulterated"
+    },
+    "WHRB_15": {
+      "total_tested": 80,
+      "correct": 80,
+      "accuracy": 1.0,
+      "avg_confidence": 0.9876,
+      "low_confidence_count": 1,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHRB_5": {
+      "total_tested": 80,
+      "correct": 72,
+      "accuracy": 0.9,
+      "avg_confidence": 0.896,
+      "low_confidence_count": 10,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHWB_10": {
+      "total_tested": 80,
+      "correct": 78,
+      "accuracy": 0.975,
+      "avg_confidence": 0.9006,
+      "low_confidence_count": 8,
+      "gate_pass_rate": 0.975,
+      "expected_class": "adulterated"
+    },
+    "WHWB_15": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9022,
+      "low_confidence_count": 5,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHWB_5": {
+      "total_tested": 80,
+      "correct": 74,
+      "accuracy": 0.925,
+      "avg_confidence": 0.8448,
+      "low_confidence_count": 12,
+      "gate_pass_rate": 0.975,
+      "expected_class": "adulterated"
+    },
+    "WHWS_10": {
+      "total_tested": 80,
+      "correct": 80,
+      "accuracy": 1.0,
+      "avg_confidence": 0.956,
+      "low_confidence_count": 2,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHWS_15": {
+      "total_tested": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "avg_confidence": 0.9768,
+      "low_confidence_count": 1,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    },
+    "WHWS_5": {
+      "total_tested": 80,
+      "correct": 76,
+      "accuracy": 0.95,
+      "avg_confidence": 0.865,
+      "low_confidence_count": 13,
+      "gate_pass_rate": 1.0,
+      "expected_class": "adulterated"
+    }
+  },
+  "parity_results": {
+    "samples_tested": 50,
+    "agreement_rate": 1.0,
+    "max_abs_drift": 0.018294,
+    "mean_abs_drift": 0.003002
+  },
+  "robustness_results": {
+    "Clean Baseline": {
+      "accuracy": 1.0,
+      "avg_confidence": 0.9215,
+      "gate_pass_rate": 1.0
+    },
+    "Brightness -30% (Low Light)": {
+      "accuracy": 0.9833,
+      "avg_confidence": 0.9075,
+      "gate_pass_rate": 0.8833
+    },
+    "Brightness +30% (Overexposed)": {
+      "accuracy": 0.95,
+      "avg_confidence": 0.8814,
+      "gate_pass_rate": 1.0
+    },
+    "Contrast -25% (Flat Light)": {
+      "accuracy": 0.9667,
+      "avg_confidence": 0.9004,
+      "gate_pass_rate": 0.9667
+    },
+    "Contrast +25% (Harsh Light)": {
+      "accuracy": 0.9,
+      "avg_confidence": 0.8536,
+      "gate_pass_rate": 1.0
+    },
+    "Slight Defocus (Blur sigma=1.0)": {
+      "accuracy": 0.5667,
+      "avg_confidence": 0.9009,
+      "gate_pass_rate": 1.0
+    },
+    "Moderate Defocus (Blur sigma=2.0)": {
+      "accuracy": 0.5,
+      "avg_confidence": 0.979,
+      "gate_pass_rate": 0.9833
+    },
+    "Warm Light (+Red, -Blue)": {
+      "accuracy": 0.9167,
+      "avg_confidence": 0.8847,
+      "gate_pass_rate": 1.0
+    },
+    "Cool Light (-Red, +Blue)": {
+      "accuracy": 1.0,
+      "avg_confidence": 0.9219,
+      "gate_pass_rate": 1.0
+    }
+  },
+  "ood_results": {
+    "cases": {
+      "Solid White Surface (Paper/Wall)": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.7958,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "Solid Black (Pocket/Covered Lens)": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "adulterated",
+        "model_confidence": 0.5788,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "Neutral Wood/Skin Tone Surface": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.7005,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "Pure Green Plant / Screen": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.8487,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "Pure Blue Cloth / Wall": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.9559,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "Low Texture Red Plastic (Variance < 150)": {
+        "red_ratio": 1.0,
+        "passed_color_gate": true,
+        "texture_variance": 0.0,
+        "passed_texture_gate": false,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.9111,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Texture Variance"
+      },
+      "App Asset: icon.png": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 2388.01,
+        "passed_texture_gate": true,
+        "raw_model_pred": "adulterated",
+        "model_confidence": 0.778,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      },
+      "App Asset: splash-icon.png": {
+        "red_ratio": 0.0,
+        "passed_color_gate": false,
+        "texture_variance": 445.52,
+        "passed_texture_gate": true,
+        "raw_model_pred": "pure",
+        "model_confidence": 0.7921,
+        "safely_rejected_by_app": true,
+        "rejection_reason": "Failed Red Ratio"
+      }
+    },
+    "safety_protection_rate": 1.0
+  }
+}
