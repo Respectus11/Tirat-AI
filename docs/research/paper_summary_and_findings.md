@@ -3,8 +3,7 @@
 **Original Paper Citation:**  
 - **Title:** *An XAI-enabled 2D-CNN model for non-destructive detection of natural adulterants in the wonder hot variety of red chilli powder*  
 - **Authors:** Dilpreet Singh Brar, Birmohan Singh, Vikas Nanda (Sant Longowal Institute of Engineering & Technology - SLIET)  
-- **Journal:** *Sustainable Food Technology* (Royal Society of Chemistry - RSC), May 2025, Vol. 3, Issue 4, pp. 1099–1113  
-- **Full Text PDF:** [`docs/research/An_XAI_Enabled_2D_CNN_Model_Red_Chilli_Adulteration_RSC_2025.pdf`](./An_XAI_Enabled_2D_CNN_Model_Red_Chilli_Adulteration_RSC_2025.pdf) (Rendered directly from complete ScienceDirect publication)
+- **Official Publication:** [pubs.rsc.org/en/content/articlelanding/2025/fb/d5fb00118h](https://pubs.rsc.org/en/content/articlelanding/2025/fb/d5fb00118h) | [DOI: 10.1039/d5fb00118h](https://doi.org/10.1039/d5fb00118h) (Open Access, CC-BY 3.0)
 
 ---
 

@@ -39,12 +39,13 @@ Tirat AI's red chilli detection engine is grounded in foundational research publ
 > **Reference Study:**  
 > *An XAI-enabled 2D-CNN model for non-destructive detection of natural adulterants in the wonder hot variety of red chilli powder*  
 > **Authors:** Dilpreet Singh Brar, Birmohan Singh, Vikas Nanda (*Sustainable Food Technology*, RSC, May 2025, 3(4), pp. 1099–1113).  
+> **Official Publication:** [pubs.rsc.org/en/content/articlelanding/2025/fb/d5fb00118h](https://pubs.rsc.org/en/content/articlelanding/2025/fb/d5fb00118h)  
 > **DOI:** [10.1039/d5fb00118h](https://doi.org/10.1039/d5fb00118h) | Open Access (CC-BY 3.0)  
-> **Local Reference Document:** [`docs/research/An_XAI_Enabled_2D_CNN_Model_Red_Chilli_Adulteration_RSC_2025.pdf`](docs/research/An_XAI_Enabled_2D_CNN_Model_Red_Chilli_Adulteration_RSC_2025.pdf)  
 > **Detailed Analysis:** [`docs/research/paper_summary_and_findings.md`](docs/research/paper_summary_and_findings.md)
 
-### Dataset Ground Truth (The 16 Classes)
-The baseline digital image dataset (Mendeley `DS-WH-1`) represents the commercially traded **Wonder Hot (WH)** red chilli variety formulated across 16 rigorous laboratory preparations:
+### Project Dataset Ground Truth (The 16 Classes)
+Our project's training and evaluation pipeline utilizes the baseline digital image dataset (Mendeley `DS-WH-1`), representing the commercially traded **Wonder Hot (WH)** red chilli variety formulated across 16 rigorous laboratory preparations:
+
 * **1 Pure Class (`WH00`)**: Authentic 0% adulterated red chilli matrix.
 * **5 Natural Bulking Adulterants** blended across **3 Concentration Tiers (5%, 10%, 15%)**:
   1. **Wheat Bran (`WHBM`)**: Coarse grain husk mimicking pericarp flakes.
@@ -196,7 +197,6 @@ Tirat AI/
 │   ├── architecture.md                  # Detailed system architecture & multi-food roadmap
 │   ├── images/                          # Visual evaluation dashboards & hero banners
 │   └── research/
-│       ├── An_XAI_Enabled_2D_CNN_Model...pdf # Full 27-page ScienceDirect publication
 │       └── paper_summary_and_findings.md     # Distilled scientific findings & takeaways
 └── README.md                            # Main project documentation
 ```
