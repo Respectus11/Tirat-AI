@@ -11,7 +11,7 @@
 
 </div>
 
-![Tirat AI Hero Banner](./docs/images/tirat_ai_hero_banner.png)
+![Tirat AI Hero Banner](docs/images/tirat_ai_hero_banner.png)
 
 <div align="center">
 
@@ -131,7 +131,7 @@ Tirat AI has been subjected to exhaustive multi-dimensional testing across 1,800
 ### 1. The 1,800-Sample Ultra Test Benchmark
 Evaluated across all 16 concentration levels and pure samples in the test corpus:
 
-![Tirat AI Ultra Test Dashboard](./docs/images/ultra_test_dashboard.png)
+![Tirat AI Ultra Test Dashboard](docs/images/ultra_test_dashboard.png)
 
 * **Overall Accuracy**: **96.0%**
 * **ROC-AUC Score**: **0.998**
@@ -144,7 +144,7 @@ Evaluated across all 16 concentration levels and pure samples in the test corpus
 ### 2. Explainable AI (Grad-CAM) Spatial Heatmaps
 To guarantee the model bases decisions on physical foreign particulates rather than background lighting or lens vignetting, we generate **Gradient-weighted Class Activation Mapping (Grad-CAM)** heatmaps at the final convolutional layer:
 
-![Grad-CAM Spatial Verification](./docs/images/gradcam_verification_audit.png)
+![Grad-CAM Spatial Verification](docs/images/gradcam_verification_audit.png)
 
 * **Pure Samples (`WH00`)**: Activations remain diffuse and evenly distributed across the red matrix.
 * **Adulterated Samples**: Activations focus into sharp, concentrated hotspots over foreign grain fibers, bran flakes, and sawdust particulates.
@@ -155,7 +155,7 @@ To guarantee the model bases decisions on physical foreign particulates rather t
 ### 3. African & Ethiopian Market Conditions Test Suite
 Simulates realistic open-air market conditions (Merkato / Shola markets), container backgrounds, and kitchen lookalikes:
 
-![Ethiopian Market Dashboard](./docs/images/ethiopian_market_dashboard.png)
+![Ethiopian Market Dashboard](docs/images/ethiopian_market_dashboard.png)
 
 * **Cross-Food Lookalike Audit**: Successfully isolates chili powder from roasted barley (*Beso*), turmeric (*Ird*), highland red clay soil (*Ye-key afer*), teff grain, and porous injera sourdough textures.
 * **Camera Geometry Resilience**: Evaluated under 15°–45° perspective angles and harsh high-elevation solar contrast shadows.
