@@ -56,6 +56,8 @@ export interface PreprocessResult {
   brownRatio: number;
   /** Pixel-level variance across RGB channels (texture gate: walls/screens ≈ 0). */
   textureVariance: number;
+  /** Average adjacent-pixel edge gradient sharpness (blur/defocus filter). */
+  sharpnessScore: number;
 }
 
 export async function imageToModelInput(
@@ -134,10 +136,30 @@ export async function imageToModelInput(
   const varB = sumB2 / totalPx - (sumB / totalPx) ** 2;
   const textureVariance = (varR + varG + varB) / 3;
 
+  // Measure edge gradient sharpness across adjacent pixels (subsampled by 2 for sub-millisecond execution).
+  let gradSum = 0;
+  let gradCount = 0;
+  for (let y = 0; y < SIZE - 1; y += 2) {
+    const rowOffset = y * SIZE;
+    const nextRowOffset = (y + 1) * SIZE;
+    for (let x = 0; x < SIZE - 1; x += 2) {
+      const idx = (rowOffset + x) * 4;
+      const idxRight = (rowOffset + x + 1) * 4;
+      const idxDown = (nextRowOffset + x) * 4;
+      const r = px[idx];
+      const rR = px[idxRight];
+      const rD = px[idxDown];
+      gradSum += Math.abs(r - rR) + Math.abs(r - rD);
+      gradCount += 2;
+    }
+  }
+  const sharpnessScore = gradCount > 0 ? gradSum / gradCount : 0;
+
   return {
     input: out,
     redRatio: redPixels / totalPx,
     brownRatio: brownPixels / totalPx,
     textureVariance,
+    sharpnessScore,
   };
 }
