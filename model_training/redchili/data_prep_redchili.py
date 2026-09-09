@@ -36,7 +36,7 @@ DATA_DIR = SCRIPT_DIR.parent / "data_redchili" / "raw"
 OUTPUTS_DIR = SCRIPT_DIR / "outputs"
 
 IMG_SIZE = 224
-BATCH_SIZE = 32
+BATCH_SIZE = 64  # Optimal batch size verified by Brar et al. (RSC, 2025)
 SEED = 42
 TRAIN_FRAC = 0.80
 VAL_FRAC = 0.10
@@ -44,32 +44,6 @@ VAL_FRAC = 0.10
 CLASS_NAMES = ["pure", "adulterated"]
 PURE_FOLDERS = ("C1_PWH", "WH00")  # only these are pure; everything else is adulterated
 AUTOTUNE = tf.data.AUTOTUNE
-
-
-class SlightBlur(tf.keras.layers.Layer):
-    """Mild variable gaussian-ish blur via depthwise convolution.
-    Same logic as Teff data_prep.py for phone-camera consistency.
-    """
-
-    def __init__(self, max_strength: float = 0.5, **kwargs):
-        super().__init__(**kwargs)
-        self.max_strength = max_strength
-
-    def call(self, inputs, training=None):
-        if len(inputs.shape) == 3:
-            inputs = tf.expand_dims(inputs, 0)
-            out = self._apply_blur(inputs)
-            return tf.squeeze(out, 0)
-        return self._apply_blur(inputs)
-
-    def _apply_blur(self, inputs):
-        identity = tf.constant([[0.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 0.0]])
-        smooth = tf.fill([3, 3], 1.0 / 9.0)
-        alpha = tf.random.uniform([], 0.0, self.max_strength)
-        kernel = (1.0 - alpha) * identity + alpha * smooth
-        kernel = tf.reshape(kernel, [3, 3, 1, 1])
-        kernel = tf.tile(kernel, [1, 1, tf.shape(inputs)[-1], 1])
-        return tf.nn.depthwise_conv2d(inputs, kernel, strides=[1, 1, 1, 1], padding="SAME")
 
 
 def _resize_short_side(img: tf.Tensor) -> tf.Tensor:
@@ -98,21 +72,38 @@ def _load_and_preprocess(path: tf.Tensor) -> tf.Tensor:
 
 
 class Augmenter:
+    """Texture-preserving phone-camera augmentation.
+    NOTE: Synthetic blur is intentionally excluded per Brar et al. (RSC, 2025),
+    as micro-textural particulate sharpness is the essential differentiator.
+    Includes zoom, translation, rotation, and lighting variations to provide
+    invariance to camera distance and perspective angles.
+    """
+
     def __init__(self, strong: bool = False):
-        self.rot = 0.04 if not strong else 0.08
-        self.bright = 0.20 if not strong else 0.35
-        self.contrast = 0.20 if not strong else 0.35
-        self.blur = SlightBlur(0.5 if not strong else 0.8)
-        self.flip = tf.keras.layers.RandomFlip("horizontal")
-        self.rot_layer = tf.keras.layers.RandomRotation(self.rot)
+        self.rot = 0.25
+        self.bright = 0.15 if not strong else 0.25
+        self.contrast = 0.15 if not strong else 0.25
+        self.flip = tf.keras.layers.RandomFlip("horizontal_and_vertical")
+        self.rot_layer = tf.keras.layers.RandomRotation(self.rot, fill_mode="reflect")
+        self.zoom_layer = tf.keras.layers.RandomZoom(
+            height_factor=(-0.15, 0.15),
+            width_factor=(-0.15, 0.15),
+            fill_mode="reflect"
+        )
+        self.trans_layer = tf.keras.layers.RandomTranslation(
+            height_factor=(-0.08, 0.08),
+            width_factor=(-0.08, 0.08),
+            fill_mode="reflect"
+        )
         self.bright_layer = tf.keras.layers.RandomBrightness(self.bright)
 
     def __call__(self, image: tf.Tensor) -> tf.Tensor:
         image = self.flip(image)
         image = self.rot_layer(image)
+        image = self.zoom_layer(image)
+        image = self.trans_layer(image)
         image = self.bright_layer(image)
         image = tf.image.random_contrast(image, 1 - self.contrast, 1 + self.contrast)
-        image = self.blur(image)
         return tf.clip_by_value(image, 0.0, 255.0)
 
 
@@ -143,7 +134,7 @@ def make_dataset(paths, cls_labels, *, augment=False, shuffle=False,
     return ds
 
 
-def build_file_lists(data_dir: Path | None = None):
+def build_file_lists(data_dir: Path | None = None, balance_1to1: bool = False):
     data_dir = data_dir or DATA_DIR
     paths, cls_labels, raw_folder_labels = [], [], []
 
@@ -183,23 +174,28 @@ def build_file_lists(data_dir: Path | None = None):
     n_pure = len(pure_paths)
     print(f"[data_prep_redchili] Found {n_pure} pure images ({Counter(pure_folders)})")
     
-    # Balance 1:1: sample equally across all adulterated classes to match n_pure
     adulterated_paths, adulterated_folders = [], []
     n_adulterated_folders = len(adulterated_dict)
-    rng = np.random.RandomState(SEED)
-    
-    # Distribute samples as evenly as possible across all adulterant folders
-    per_folder = n_pure // n_adulterated_folders
-    remainder = n_pure % n_adulterated_folders
-    
-    for idx, (f_name, f_files) in enumerate(sorted(adulterated_dict.items())):
-        sample_count = per_folder + (1 if idx < remainder else 0)
-        chosen = rng.choice(f_files, size=min(sample_count, len(f_files)), replace=False)
-        for p in chosen:
-            adulterated_paths.append(p)
-            adulterated_folders.append(f_name)
 
-    print(f"[data_prep_redchili] Sampled {len(adulterated_paths)} adulterated images across {n_adulterated_folders} folders for 1:1 balance")
+    if balance_1to1:
+        # Sample equally across all adulterated classes to match n_pure
+        rng = np.random.RandomState(SEED)
+        per_folder = n_pure // n_adulterated_folders
+        remainder = n_pure % n_adulterated_folders
+        for idx, (f_name, f_files) in enumerate(sorted(adulterated_dict.items())):
+            sample_count = per_folder + (1 if idx < remainder else 0)
+            chosen = rng.choice(f_files, size=min(sample_count, len(f_files)), replace=False)
+            for p in chosen:
+                adulterated_paths.append(p)
+                adulterated_folders.append(f_name)
+        print(f"[data_prep_redchili] Sampled {len(adulterated_paths)} adulterated images across {n_adulterated_folders} folders for 1:1 balance")
+    else:
+        # Use full dataset (all gradations & adulterant types) with class-weighting
+        for f_name, f_files in sorted(adulterated_dict.items()):
+            for p in f_files:
+                adulterated_paths.append(p)
+                adulterated_folders.append(f_name)
+        print(f"[data_prep_redchili] Using full dataset: {len(adulterated_paths)} adulterated images across {n_adulterated_folders} folders")
 
     paths = pure_paths + adulterated_paths
     cls_labels = [0] * len(pure_paths) + [1] * len(adulterated_paths)
@@ -240,10 +236,11 @@ def build_file_lists(data_dir: Path | None = None):
     return splits, stats
 
 
-def get_datasets_redchili(cache: bool = True):
-    splits, stats = build_file_lists()
+def get_datasets_redchili(cache: bool = True, balance_1to1: bool = False, batch_size: int = BATCH_SIZE):
+    splits, stats = build_file_lists(balance_1to1=balance_1to1)
     datasets = {
-        name: make_dataset(p, c, augment=(name == "train"), shuffle=(name == "train"), cache=cache)
+        name: make_dataset(p, c, augment=(name == "train"), shuffle=(name == "train"),
+                            batch_size=batch_size, cache=cache)
         for name, (p, c) in splits.items()
     }
     return datasets, stats, CLASS_NAMES
@@ -251,10 +248,11 @@ def get_datasets_redchili(cache: bool = True):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Data prep check for Red Chili")
+    parser.add_argument("--balance-1to1", action="store_true", help="Sample adulterated 1:1 with pure")
     args = parser.parse_args()
     OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
     try:
-        _, stats = build_file_lists()
+        _, stats = build_file_lists(balance_1to1=args.balance_1to1)
         (OUTPUTS_DIR / "dataset_summary.json").write_text(json.dumps(stats, indent=2))
         print(json.dumps(stats, indent=2))
     except SystemExit as e:
