@@ -34,7 +34,7 @@ import { persistPhoto } from "../src/util/fs";
 type Phase =
   | { kind: "analyzing" }
   | { kind: "error"; message: string; model: boolean }
-  | { kind: "not_food" }
+  | { kind: "not_food"; isBlur?: boolean }
   | {
       kind: "done";
       verdict: VerdictKey | "inconclusive";
@@ -123,11 +123,11 @@ export default function ResultScreen() {
       setPhase({ kind: "analyzing" });
       const r = await analyzePhoto(photoUri, foodType);
       if (isCancelled.current) return;
-      if (r.status === "not_food") {
-        // Not a powder sample (hand, table, …) — show guidance, save nothing.
+      if (r.status === "not_food" || r.status === "blurry") {
+        // Not a powder sample (hand, table, …) or blurry — show guidance, save nothing.
         fireHaptic(Haptics.NotificationFeedbackType.Warning);
         if (isCancelled.current) return;
-        setPhase({ kind: "not_food" });
+        setPhase({ kind: "not_food", isBlur: r.status === "blurry" });
         return;
       }
       if (r.status !== "ok") {
@@ -233,13 +233,21 @@ export default function ResultScreen() {
     return (
       <Centered bg={colors.bg}>
         <View style={styles.errIconCircle}>
-          <Ionicons name="hand-left-outline" size={34} color={colors.amber} />
+          <Ionicons
+            name={phase.isBlur ? "eye-off-outline" : "hand-left-outline"}
+            size={34}
+            color={colors.amber}
+          />
         </View>
         <Text style={[styles.errTitle, isAmharic && styles.fontAmBold]}>
           {t("not_food_title")}
         </Text>
         <Text style={[styles.errBody, isAmharic && styles.fontAm]}>
-          {t("not_food_body")}
+          {phase.isBlur
+            ? t("not_food_blur_body")
+            : foodType === "teff"
+            ? t("not_food_teff_body")
+            : t("not_food_body")}
         </Text>
         <TouchableOpacity
           style={styles.primaryBtn}
